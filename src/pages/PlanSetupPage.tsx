@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
-import { Upload, Camera, Layers, RotateCcw, Check, X, GripVertical } from 'lucide-react';
+import { Upload, Camera, Layers, RotateCcw, Check, X, GripVertical, Eraser } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
 import { uploadFloorPlan } from '../lib/api';
 
@@ -12,6 +12,8 @@ interface PlacedHotspot {
   y: number;
   label: string;
 }
+
+type Mode = 'select' | 'upload' | 'place' | 'draw';
 
 function getUploadedFloorPlanUrl(value: unknown) {
   if (!value || typeof value !== 'object') return null;
@@ -25,7 +27,7 @@ function getUploadedFloorPlanUrl(value: unknown) {
 export default function PlanSetupPage() {
   const navigate = useNavigate();
   const { rooms, property, floorPlan, setFloorPlan } = useStore();
-  const [mode, setMode] = useState<'select' | 'upload' | 'place'>(floorPlan?.imageUrl ? 'place' : 'select');
+  const [mode, setMode] = useState<Mode>(floorPlan?.imageUrl ? 'place' : 'select');
   const [planImage, setPlanImage] = useState<string | null>(floorPlan?.imageUrl || null);
   const [planFile, setPlanFile] = useState<File | null>(null);
   const [planType, setPlanType] = useState<'image' | 'pdf'>('image');
@@ -37,6 +39,10 @@ export default function PlanSetupPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const planRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const drawCanvasRef = useRef<HTMLCanvasElement>(null);
+  const drawingRef = useRef(false);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const nextHotspotId = useRef(0);
 
   const activeRooms = rooms.filter((r) => r.active);
@@ -51,6 +57,7 @@ export default function PlanSetupPage() {
       setUploadError(null);
       setMode('place');
     }
+    event.target.value = '';
   };
 
   const handlePlanTap = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -130,10 +137,97 @@ export default function PlanSetupPage() {
     [draggingId]
   );
 
-  // Mode Selection
+  useEffect(() => {
+    if (mode !== 'draw') return;
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#1a1422';
+    ctx.lineWidth = 3;
+  }, [mode]);
+
+  const getDrawPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const handleDrawPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drawingRef.current = true;
+    const p = getDrawPoint(e);
+    lastPointRef.current = p;
+    if (p) {
+      const ctx = drawCanvasRef.current?.getContext('2d');
+      if (ctx) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#1a1422';
+        ctx.fill();
+      }
+    }
+  };
+
+  const handleDrawPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drawingRef.current) return;
+    e.preventDefault();
+    const ctx = drawCanvasRef.current?.getContext('2d');
+    const p = getDrawPoint(e);
+    const last = lastPointRef.current;
+    if (!ctx || !p || !last) return;
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lastPointRef.current = p;
+  };
+
+  const handleDrawPointerUp = () => {
+    drawingRef.current = false;
+    lastPointRef.current = null;
+  };
+
+  const handleClearCanvas = () => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+  };
+
+  const handleFinishDrawing = () => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'plan.png', { type: 'image/png' });
+      const url = URL.createObjectURL(file);
+      setPlanFile(file);
+      setPlanImage(url);
+      setPlanType('image');
+      setUploadError(null);
+      setMode('place');
+    }, 'image/png');
+  };
+
   if (mode === 'select') {
     return (
-      <div className="min-h-dvh px-4 pt-5 pb-0">
+      <div className="flex min-h-full flex-col px-4 pt-5 pb-0">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">План приміщення</h2>
           <p className="text-[14px] text-[#a08fb0] mb-6">Оберіть спосіб додавання плану</p>
@@ -143,7 +237,7 @@ export default function PlanSetupPage() {
           {[
             { id: 'upload', icon: Upload, title: 'Завантажити', desc: 'Вибрати зображення плану', primary: true },
             { id: 'photo', icon: Camera, title: 'Сфотографувати', desc: 'Зняти друкований план', primary: false },
-            { id: 'manual', icon: GripVertical, title: 'Намалювати', desc: 'Схематичний план вручну', primary: false, disabled: true, badge: 'P2' },
+            { id: 'manual', icon: GripVertical, title: 'Намалювати', desc: 'Схематичний план вручну', primary: false },
             { id: 'combined', icon: Layers, title: 'Комбінований', desc: 'Завантажити + розмістити точки', primary: true, badge: 'MVP' },
           ].map((card, index) => {
             const Icon = card.icon;
@@ -153,21 +247,21 @@ export default function PlanSetupPage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
-                whileTap={!card.disabled ? { scale: 0.97 } : {}}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                  if (card.disabled) return;
                   if (card.id === 'upload' || card.id === 'combined') {
                     fileInputRef.current?.click();
+                  } else if (card.id === 'photo') {
+                    cameraInputRef.current?.click();
+                  } else if (card.id === 'manual') {
+                    setMode('draw');
                   }
                 }}
-                disabled={card.disabled}
-                className={`relative flex flex-col items-center text-center p-5 rounded-[16px] border transition-all ${
-                  card.primary && !card.disabled
+                className={`relative flex flex-col items-center text-center p-5 rounded-[16px] border transition-all active:scale-[0.97] ${
+                  card.primary
                     ? 'bg-[rgba(209,0,217,0.12)] border-[rgba(209,0,217,0.2)]'
-                    : card.disabled
-                    ? 'bg-[#14101a] border-[rgba(232,78,250,0.10)] opacity-40'
                     : 'bg-[#14101a] border-[rgba(232,78,250,0.10)]'
-                } ${card.disabled ? '' : 'active:scale-[0.97]'}`}
+                }`}
               >
                 {card.badge && (
                   <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#d100d9] text-[#0a070d] text-[10px] font-bold rounded-full">
@@ -195,8 +289,16 @@ export default function PlanSetupPage() {
           className="hidden"
           onChange={handleFileSelect}
         />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handleFileSelect}
+        />
 
-        <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+        <div className="mt-auto p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
           <button
             onClick={() => {
               setFloorPlan(null);
@@ -211,10 +313,61 @@ export default function PlanSetupPage() {
     );
   }
 
-  // Place hotspots mode
+  if (mode === 'draw') {
+    return (
+      <div className="flex min-h-full flex-col">
+        <div className="flex-1 px-4 pt-4 pb-4">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[13px] text-[#a08fb0] mb-3 text-center">
+            Намалюйте схематичний план пальцем
+          </motion.p>
+
+          <div className="relative w-full aspect-square bg-white rounded-[16px] overflow-hidden border border-[rgba(232,78,250,0.10)]">
+            <canvas
+              ref={drawCanvasRef}
+              onPointerDown={handleDrawPointerDown}
+              onPointerMove={handleDrawPointerMove}
+              onPointerUp={handleDrawPointerUp}
+              onPointerCancel={handleDrawPointerUp}
+              onPointerLeave={handleDrawPointerUp}
+              className="block w-full h-full touch-none"
+            />
+          </div>
+
+          <div className="mt-3 flex justify-center">
+            <button
+              onClick={handleClearCanvas}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] border border-white/[0.15] text-[#a08fb0] text-[13px]"
+            >
+              <Eraser className="w-4 h-4" />
+              Очистити
+            </button>
+          </div>
+        </div>
+
+        <div className="p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+          <div className="flex gap-3">
+            <button
+              onClick={() => setMode('select')}
+              className="flex-1 h-[52px] border border-white/[0.15] text-[#a08fb0] font-medium rounded-[12px] flex items-center justify-center gap-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Назад
+            </button>
+            <button
+              onClick={handleFinishDrawing}
+              className="flex-[2] h-[52px] bg-[#d100d9] text-[#0a070d] font-semibold rounded-[12px] flex items-center justify-center gap-2"
+            >
+              <Check className="w-4 h-4" />
+              Готово
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-dvh flex flex-col">
-      {/* Plan Area */}
+    <div className="flex min-h-full flex-col">
       <div className="flex-1 px-4 pt-4 pb-4">
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[13px] text-[#a08fb0] mb-3 text-center">
           Торкніться плану, щоб розмістити точку кімнати
@@ -235,7 +388,6 @@ export default function PlanSetupPage() {
             <img src={planImage} alt="Floor Plan" className="w-full h-full object-contain" draggable={false} />
           )}
 
-          {/* Grid overlay */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="w-full h-full" style={{
               backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
@@ -243,7 +395,6 @@ export default function PlanSetupPage() {
             }} />
           </div>
 
-          {/* Hotspots */}
           {hotspots.map((h) => (
             <motion.div
               key={h.id}
@@ -273,7 +424,6 @@ export default function PlanSetupPage() {
           ))}
         </div>
 
-        {/* Hotspot Legend */}
         {hotspots.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-wrap gap-2">
             {hotspots.map((h) => (
@@ -288,7 +438,6 @@ export default function PlanSetupPage() {
         )}
       </div>
 
-      {/* Room Picker Bottom Sheet */}
       <AnimatePresence>
         {showRoomPicker && (
           <>
@@ -330,8 +479,7 @@ export default function PlanSetupPage() {
         )}
       </AnimatePresence>
 
-      {/* Bottom Actions */}
-      <div className="p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent">
+      <div className="p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
         <div className="flex gap-3">
           <button
             onClick={() => {
