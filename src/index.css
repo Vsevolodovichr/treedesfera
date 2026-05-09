@@ -9,6 +9,8 @@
   font-display: swap;
 }
 
+
+@layer base {
 :root {
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -77,6 +79,7 @@
   --ring: 295 100% 43%;
   --radius: 12px;
 }
+}
 
 @layer base {
   * {
@@ -86,8 +89,7 @@
     @apply bg-[#0a070d] text-[#f5f0fa] font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     padding-top: 0;
-    overflow-x: hidden;
-    overscroll-behavior: none;
+
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -10%, rgba(209, 0, 217, 0.10), transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 100%, rgba(106, 0, 110, 0.12), transparent 60%);
@@ -106,10 +108,23 @@
     background: rgba(209, 0, 217, 0.4);
     color: #fff;
   }
+
+    .section-graphite-cool {
+    position: relative;
+    background: linear-gradient(
+      155deg,
+      hsla(0, 0%, 6%, 0.65) 0%,
+      hsla(0, 0%, 12%, 0.65) 30%,
+      hsla(240, 2%, 8%, 0.65) 50%,
+      hsla(0, 0%, 12%, 0.65) 70%,
+      hsla(0, 0%, 7%, 0.65) 100%
+    );
+    background-size: 100% 100%;
+  }
 }
 
 .pb-safe {
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
 }
 
 /* Animations -------------------------------------------------------- */

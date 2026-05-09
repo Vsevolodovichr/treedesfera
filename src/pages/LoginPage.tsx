@@ -148,15 +148,6 @@ export default function LoginPage() {
         </button>
       </motion.div>
 
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="relative z-10 mt-auto mb-8 text-[12px] text-[#5a4d68] hover:text-[#a08fb0] transition-colors"
-        onClick={() => {}}
-      >
-        ← Повернутися до CRM
-      </motion.button>
     </div>
   );
 }

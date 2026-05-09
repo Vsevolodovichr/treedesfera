@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 const screenTitles: Record<string, string> = {
-  '/start': 'Xatosfera Capture',
+  '/start': '3Dсфера',
   '/property/new': 'Новий об\'єкт',
   '/property/select': 'Оберіть об\'єкт',
   '/plan': 'План приміщення',
@@ -16,7 +16,7 @@ export default function MobileHeader() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const title = screenTitles[location.pathname] || 'Xatosfera Capture';
+  const title = screenTitles[location.pathname] || '3Dсфера';
   const showBack = location.pathname !== '/start' && location.pathname !== '/';
 
   return (

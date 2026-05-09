@@ -22,7 +22,11 @@ async function syncPendingCaptures() {
 }
 
 if ('serviceWorker' in navigator) {
-  const wb = new Workbox('/sw.js');
+  const swUrl = new URL(import.meta.url);
+  swUrl.pathname = swUrl.pathname.includes('/assets/')
+    ? swUrl.pathname.replace(/\/assets\/[^/]+$/, '/sw.js')
+    : '/sw.js';
+  const wb = new Workbox(swUrl.toString());
 
   wb.addEventListener('message', (event) => {
     if (!isCaptureQueueMessage(event.data)) return;
