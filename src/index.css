@@ -12,8 +12,13 @@
 
 @layer base {
 :root {
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  
+  
+    --font-sans: -apple-system, 'SF Pro Text', 'TT Norms Pro', system-ui, sans-serif;
+    --font-display:
+      -apple-system, 'SF Pro Display', 'TT Hoves', 'TT Norms Pro', system-ui, sans-serif;
 
   /* Surfaces — near-black, faintly cool to harmonise with magenta */
   --bg-primary: #0a070d;
@@ -82,19 +87,41 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-[#0a070d] text-[#f5f0fa] font-sans antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    padding-top: 0;
+  /* ─── iOS Focus States ─── */
+*:focus-visible {
+  outline: none;
+}
 
-    background-image:
+    
+    body {
+    @apply bg-background text-foreground font-sans antialiased;
+font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    /* iOS-style smooth scrolling */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    
+        background-image:
       radial-gradient(ellipse 80% 50% at 50% -10%, rgba(209, 0, 217, 0.10), transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 100%, rgba(106, 0, 110, 0.12), transparent 60%);
     background-attachment: fixed;
+  
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button,
+  [role='button'] {
+    font-family: var(--font-display);
+    color: hsl(var(--primary-foreground));
+  }
+
+
   input, textarea, select {
     font-size: 16px !important;
   }
