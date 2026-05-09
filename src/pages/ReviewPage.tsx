@@ -3,12 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle, Camera, Check, ChevronRight } from 'lucide-react';
 import { useStore, qualityMessages } from '../store';
+import { useDepthBatch } from '../hooks/useDepthBatch';
 
 export default function ReviewPage() {
   const navigate = useNavigate();
-  const { rooms } = useStore();
+  const { rooms, deviceCaps } = useStore();
+  const depthBatch = useDepthBatch();
   const activeRooms = rooms.filter((r) => r.active);
   const completedRooms = activeRooms.filter((r) => r.status === 'completed');
+  const depthPhotos = activeRooms.flatMap((room) => room.photos.filter((photo) => photo.status === 'accepted'));
+  const readyDepthPhotos = depthPhotos.filter((photo) => photo.depthStatus === 'ready').length;
+  const withoutDepthPhotos = depthPhotos.filter((photo) => photo.depthStatus === 'failed' || photo.depthStatus === 'skipped').length;
+  const showDepthBlock = import.meta.env.VITE_DEPTH_ENABLED !== 'false' && deviceCaps?.recommendation !== 'off';
   
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
@@ -149,6 +155,66 @@ export default function ReviewPage() {
           );
         })}
       </div>
+
+      {showDepthBlock && (
+        <div className="mt-6 rounded-[16px] border border-white/[0.08] bg-[#141414] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[16px] font-semibold text-[#f5f5f5]">3D-перегляд</h3>
+              {depthBatch.status === 'done' && (
+                <p className="mt-1 text-[13px] text-[#888]">3D готово для {readyDepthPhotos} фото · {withoutDepthPhotos} без 3D</p>
+              )}
+              {depthBatch.status === 'cancelled' && (
+                <p className="mt-1 text-[13px] text-[#888]">3D пропущено</p>
+              )}
+            </div>
+            {depthBatch.status === 'idle' && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={depthBatch.start}
+                  className="h-10 rounded-[10px] bg-[#d4af37] px-3 text-[13px] font-semibold text-[#0a0a0a]"
+                >
+                  Підготувати 3D
+                </button>
+                <button
+                  type="button"
+                  onClick={depthBatch.skip}
+                  className="h-10 rounded-[10px] border border-white/[0.08] px-3 text-[13px] text-[#f5f5f5]"
+                >
+                  Пропустити
+                </button>
+              </div>
+            )}
+          </div>
+
+          {depthBatch.status === 'loading-model' && (
+            <div className="mt-4">
+              <div className="mb-2 flex justify-between text-[12px] text-[#888]">
+                <span>Завантаження AI-моделі (~50 MB), це разово</span>
+                <span>{Math.round(depthBatch.modelLoadProgress * 100)}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full bg-[#d4af37]" style={{ width: `${Math.round(depthBatch.modelLoadProgress * 100)}%` }} />
+              </div>
+            </div>
+          )}
+
+          {depthBatch.status === 'processing' && (
+            <div className="mt-4">
+              <div className="mb-2 flex items-center justify-between text-[12px] text-[#888]">
+                <span>{depthBatch.processed}/{depthBatch.total} фото</span>
+                <button type="button" onClick={depthBatch.skip} className="text-[#d4af37]">
+                  Пропустити решту
+                </button>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full bg-[#d4af37]" style={{ width: `${depthBatch.total ? Math.round((depthBatch.processed / depthBatch.total) * 100) : 0}%` }} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Continue Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">

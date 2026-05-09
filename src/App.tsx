@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useStore } from './store';
 import MobileHeader from './components/MobileHeader';
@@ -14,8 +15,22 @@ import PreviewPage from './pages/PreviewPage';
 import PublishPage from './pages/PublishPage';
 import PublicTourPage from './pages/PublicTourPage';
 
+const DevDepthPage = import.meta.env.DEV ? lazy(() => import('./pages/DevDepthPage')) : null;
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const [hydrated, setHydrated] = useState(useStore.persist.hasHydrated());
+
+  useEffect(() => {
+    const unsubscribe = useStore.persist.onFinishHydration(() => setHydrated(true));
+    const timer = useStore.persist.hasHydrated() ? window.setTimeout(() => setHydrated(true), 0) : null;
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      unsubscribe();
+    };
+  }, []);
+
+  if (!hydrated) return null;
   return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
 }
 
@@ -34,6 +49,21 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/tour/:slug" element={<PublicTourPage />} />
+        <Route path="/p/:id" element={<PublicTourPage />} />
+        <Route
+          path="/dev/depth"
+          element={
+            <ProtectedRoute>
+              {import.meta.env.DEV && DevDepthPage ? (
+                <Suspense fallback={null}>
+                  <DevDepthPage />
+                </Suspense>
+              ) : (
+                <Navigate to="/start" replace />
+              )}
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/start"
           element={

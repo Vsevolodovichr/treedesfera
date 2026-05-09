@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { Upload, Camera, Layers, RotateCcw, Check, X, GripVertical } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
+import { uploadFloorPlan } from '../lib/api';
 
 interface PlacedHotspot {
   id: string;
@@ -12,17 +13,31 @@ interface PlacedHotspot {
   label: string;
 }
 
+function getUploadedFloorPlanUrl(value: unknown) {
+  if (!value || typeof value !== 'object') return null;
+  const record = value as Record<string, unknown>;
+  const directUrl = record.floor_plan_url || record.floorPlanUrl || record.image_url || record.url;
+  if (typeof directUrl === 'string') return directUrl;
+  const key = record.floor_plan_key;
+  return typeof key === 'string' && (key.startsWith('/') || key.startsWith('http')) ? key : null;
+}
+
 export default function PlanSetupPage() {
   const navigate = useNavigate();
-  const { rooms, setFloorPlan } = useStore();
-  const [mode, setMode] = useState<'select' | 'upload' | 'place'>('select');
-  const [planImage, setPlanImage] = useState<string | null>(null);
-  const [hotspots, setHotspots] = useState<PlacedHotspot[]>([]);
+  const { rooms, property, floorPlan, setFloorPlan } = useStore();
+  const [mode, setMode] = useState<'select' | 'upload' | 'place'>(floorPlan?.imageUrl ? 'place' : 'select');
+  const [planImage, setPlanImage] = useState<string | null>(floorPlan?.imageUrl || null);
+  const [planFile, setPlanFile] = useState<File | null>(null);
+  const [planType, setPlanType] = useState<'image' | 'pdf'>('image');
+  const [hotspots, setHotspots] = useState<PlacedHotspot[]>(floorPlan?.hotspots || []);
   const [showRoomPicker, setShowRoomPicker] = useState(false);
   const [pendingPoint, setPendingPoint] = useState<{ x: number; y: number } | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const planRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nextHotspotId = useRef(0);
 
   const activeRooms = rooms.filter((r) => r.active);
 
@@ -30,7 +45,10 @@ export default function PlanSetupPage() {
     const file = event.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
+      setPlanFile(file);
       setPlanImage(url);
+      setPlanType(file.type === 'application/pdf' ? 'pdf' : 'image');
+      setUploadError(null);
       setMode('place');
     }
   };
@@ -51,10 +69,11 @@ export default function PlanSetupPage() {
     if (existing) {
       setHotspots(hotspots.map((h) => (h.id === existing.id ? { ...h, x: pendingPoint.x, y: pendingPoint.y } : h)));
     } else {
+      nextHotspotId.current += 1;
       setHotspots([
         ...hotspots,
         {
-          id: 'hs_' + Date.now(),
+          id: `hs_${room.id}_${nextHotspotId.current}`,
           roomId: room.id,
           x: pendingPoint.x,
           y: pendingPoint.y,
@@ -70,13 +89,26 @@ export default function PlanSetupPage() {
     setHotspots(hotspots.filter((h) => h.id !== id));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (planImage) {
+      setIsSaving(true);
+      let imageUrl = planImage;
+      if (planFile && property?.id) {
+        try {
+          const uploaded = await uploadFloorPlan(property.id, planFile);
+          imageUrl = getUploadedFloorPlanUrl(uploaded) || imageUrl;
+        } catch {
+          setUploadError('Не вдалося завантажити план');
+          setIsSaving(false);
+          return;
+        }
+      }
       setFloorPlan({
-        imageUrl: planImage,
+        imageUrl,
         hotspots: hotspots.map((h) => ({ id: h.id, roomId: h.roomId, x: h.x, y: h.y, label: h.label })),
       });
     }
+    setIsSaving(false);
     navigate('/rooms');
   };
 
@@ -85,7 +117,7 @@ export default function PlanSetupPage() {
   };
 
   const handleDragEnd = useCallback(
-    (_e: any, info: any) => {
+    (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
       if (!planRef.current || !draggingId) return;
       const rect = planRef.current.getBoundingClientRect();
       const x = ((info.point.x - rect.left) / rect.width) * 100;
@@ -159,7 +191,7 @@ export default function PlanSetupPage() {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,application/pdf"
           className="hidden"
           onChange={handleFileSelect}
         />
@@ -193,7 +225,13 @@ export default function PlanSetupPage() {
           onClick={handlePlanTap}
           className="relative w-full aspect-square bg-[#141414] rounded-[16px] overflow-hidden border border-white/[0.08] cursor-crosshair"
         >
-          {planImage && (
+          {planImage && planType === 'pdf' && (
+            <object data={planImage} type="application/pdf" className="w-full h-full bg-white">
+              <div className="flex h-full items-center justify-center text-[12px] text-[#888]">PDF-план завантажено</div>
+            </object>
+          )}
+
+          {planImage && planType === 'image' && (
             <img src={planImage} alt="Floor Plan" className="w-full h-full object-contain" draggable={false} />
           )}
 
@@ -299,6 +337,8 @@ export default function PlanSetupPage() {
             onClick={() => {
               setMode('select');
               setPlanImage(null);
+              setPlanFile(null);
+              setPlanType('image');
               setHotspots([]);
             }}
             className="flex-1 h-[52px] border border-white/[0.15] text-[#888] font-medium rounded-[12px] flex items-center justify-center gap-2"
@@ -308,12 +348,14 @@ export default function PlanSetupPage() {
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-[2] h-[52px] bg-[#d4af37] text-[#0a0a0a] font-semibold rounded-[12px] flex items-center justify-center gap-2"
+            disabled={isSaving}
+            className="flex-[2] h-[52px] bg-[#d4af37] text-[#0a0a0a] font-semibold rounded-[12px] flex items-center justify-center gap-2 disabled:opacity-60"
           >
             <Check className="w-4 h-4" />
-            Підтвердити план
+            {isSaving ? 'Збереження...' : 'Підтвердити план'}
           </button>
         </div>
+        {uploadError && <p className="mt-2 text-center text-[12px] text-[#f87171]">{uploadError}</p>}
       </div>
     </div>
   );

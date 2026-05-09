@@ -1,18 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
+import { login, refreshSession, toStoreUser } from '../lib/api';
+import { probeDepthSupport } from '../lib/depth/capabilities';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setAuthenticated, setUser } = useStore();
+  const { setAuthenticated, setUser, setDeviceCaps } = useStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    refreshSession()
+      .then((user) => {
+        if (cancelled || !user) return;
+        setAuthenticated(true);
+        void probeDepthSupport().then(setDeviceCaps);
+        setUser(toStoreUser(user));
+        navigate('/start', { replace: true });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setAuthenticated(false);
+        setUser(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, setAuthenticated, setDeviceCaps, setUser]);
 
   const handleLogin = async () => {
     setError('');
@@ -23,11 +47,19 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setAuthenticated(true);
-    setUser({ name: 'Олександр', email, agency: 'Premier Estate' });
-    setLoading(false);
-    navigate('/start');
+    try {
+      const session = await login(email, password);
+      setAuthenticated(true);
+      void probeDepthSupport().then(setDeviceCaps);
+      setUser(toStoreUser(session.user));
+      navigate('/start');
+    } catch {
+      setError('Невірний email або пароль');
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

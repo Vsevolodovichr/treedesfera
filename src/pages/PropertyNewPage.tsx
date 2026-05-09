@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
 import { useStore } from '../store';
+import { createProperty, getUsers, toCaptureProperty } from '../lib/api';
 
 type PropertyType = 'apartment' | 'house' | 'commercial';
 type DealType = 'sale' | 'rent';
@@ -16,32 +18,58 @@ export default function PropertyNewPage() {
   const [area, setArea] = useState('');
   const [floor, setFloor] = useState('');
   const [price, setPrice] = useState('');
+  const [ownerPhone, setOwnerPhone] = useState('');
   const [dealType, setDealType] = useState<DealType>('sale');
+  const [assignedToUserId, setAssignedToUserId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
+  const canSelectManager = user?.role === 'top_manager' || user?.role === 'superuser';
+
+  const managersQuery = useQuery({
+    queryKey: ['users', 'manager', user?.agency_id],
+    queryFn: () => getUsers({ role: 'manager' }),
+    enabled: canSelectManager,
+  });
+
+  const effectiveAssignedToUserId = canSelectManager ? assignedToUserId || managersQuery.data?.[0]?.id || '' : user?.id || '';
+  const selectedManager = managersQuery.data?.find((manager) => manager.id === effectiveAssignedToUserId);
+  const agentName = selectedManager?.name || user?.name || 'Агент';
+
+  const createPropertyMutation = useMutation({
+    mutationFn: createProperty,
+    onSuccess: (property) => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      setProperty(toCaptureProperty(property, agentName));
+      navigate('/plan');
+    },
+  });
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (address.length < 5) e.address = 'Мінімум 5 символів';
     if (!price) e.price = 'Вкажіть ціну';
+    if (canSelectManager && managersQuery.data?.length && !effectiveAssignedToUserId) e.assignedToUserId = 'Оберіть менеджера';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validate()) return;
-    setProperty({
-      id: 'prop_' + Date.now(),
-      type,
-      address,
-      rooms,
-      area: Number(area) || undefined,
-      floor: Number(floor) || undefined,
-      price: Number(price),
-      dealType,
-      shortName: address.split(',')[0] || 'Об\'єкт',
-      agent: user?.name || 'Агент',
-    });
-    navigate('/plan');
+    try {
+      await createPropertyMutation.mutateAsync({
+        type,
+        address,
+        rooms,
+        area: Number(area) || undefined,
+        floor: Number(floor) || undefined,
+        price: Number(price),
+        deal_type: dealType,
+        assigned_to_user_id: effectiveAssignedToUserId,
+        owner_phones: ownerPhone.trim() ? [ownerPhone.trim()] : [],
+      });
+    } catch {
+      setErrors((current) => ({ ...current, api: 'Не вдалося створити об\'єкт' }));
+    }
   };
 
   const inputClass = (hasError: boolean) =>
@@ -149,6 +177,17 @@ export default function PropertyNewPage() {
           {errors.price && <p className="text-[#f87171] text-[12px] mt-1">{errors.price}</p>}
         </motion.div>
 
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Телефон власника</label>
+          <input
+            type="tel"
+            value={ownerPhone}
+            onChange={(e) => setOwnerPhone(e.target.value)}
+            placeholder="+380..."
+            className={inputClass(false)}
+          />
+        </motion.div>
+
         {/* Deal Type */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Тип угоди</label>
@@ -172,19 +211,45 @@ export default function PropertyNewPage() {
         {/* Agent */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
           <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Відповідальний агент</label>
-          <div className="w-full h-[56px] px-4 bg-[#141414] border border-white/[0.08] rounded-[12px] flex items-center text-[#f5f5f5] opacity-70">
-            {user?.name || 'Агент'}
-          </div>
+          {canSelectManager ? (
+            <>
+              <select
+                value={effectiveAssignedToUserId}
+                onChange={(e) => setAssignedToUserId(e.target.value)}
+                disabled={managersQuery.isLoading}
+                className={inputClass(!!errors.assignedToUserId)}
+              >
+                {managersQuery.isLoading ? (
+                  <option value="">Завантаження...</option>
+                ) : managersQuery.data?.length ? (
+                  managersQuery.data.map((manager) => (
+                    <option key={manager.id} value={manager.id}>
+                      {manager.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Менеджерів не знайдено</option>
+                )}
+              </select>
+              {errors.assignedToUserId && <p className="text-[#f87171] text-[12px] mt-1">{errors.assignedToUserId}</p>}
+            </>
+          ) : (
+            <div className="w-full h-[56px] px-4 bg-[#141414] border border-white/[0.08] rounded-[12px] flex items-center text-[#f5f5f5] opacity-70">
+              {agentName}
+            </div>
+          )}
         </motion.div>
       </div>
 
       {/* Sticky Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+        {errors.api && <p className="text-[#f87171] text-[12px] mb-2 text-center">{errors.api}</p>}
         <button
           onClick={handleNext}
-          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all"
+          disabled={createPropertyMutation.isPending}
+          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all disabled:opacity-60"
         >
-          Далі
+          {createPropertyMutation.isPending ? 'Створення...' : 'Далі'}
         </button>
       </div>
     </div>

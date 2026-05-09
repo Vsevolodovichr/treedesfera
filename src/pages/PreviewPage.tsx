@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStore } from '../store';
+import { getDepth } from '../lib/depth/storage';
+import { requestOrientationPermission } from '../lib/depth/orientation';
+
+const DepthViewer = lazy(() => import('../components/DepthViewer'));
 
 export default function PreviewPage() {
   const navigate = useNavigate();
@@ -11,24 +15,59 @@ export default function PreviewPage() {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [showFullImage, setShowFullImage] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxDepth, setLightboxDepth] = useState<{ photoId: string; url: string } | null>(null);
+  const [orientationEnabled, setOrientationEnabled] = useState(false);
 
   const allPhotos = activeRooms.flatMap((r) => r.photos);
+  const activePhoto = allPhotos[lightboxIndex] || null;
+  const lightboxDepthUrl = showFullImage && activePhoto && lightboxDepth?.photoId === activePhoto.id ? lightboxDepth.url : null;
+
+  useEffect(() => {
+    let cancelled = false;
+    let nextDepthUrl: string | null = null;
+
+    if (!showFullImage || !activePhoto || activePhoto.depthStatus !== 'ready' || import.meta.env.VITE_DEPTH_ENABLED === 'false') {
+      return;
+    }
+
+    void getDepth(activePhoto.id).then((depth) => {
+      if (cancelled) {
+        if (depth) URL.revokeObjectURL(depth.url);
+        return;
+      }
+      nextDepthUrl = depth?.url ?? null;
+      setLightboxDepth(nextDepthUrl ? { photoId: activePhoto.id, url: nextDepthUrl } : null);
+    });
+
+    return () => {
+      cancelled = true;
+      if (nextDepthUrl) URL.revokeObjectURL(nextDepthUrl);
+    };
+  }, [activePhoto, showFullImage]);
+
   const openLightbox = (url: string) => {
     const idx = allPhotos.findIndex((p) => p.url === url);
+    setLightboxDepth(null);
     setLightboxIndex(idx >= 0 ? idx : 0);
     setShowFullImage(url);
   };
 
   const nextPhoto = () => {
     const next = (lightboxIndex + 1) % allPhotos.length;
+    setLightboxDepth(null);
     setLightboxIndex(next);
     setShowFullImage(allPhotos[next]?.url || null);
   };
 
   const prevPhoto = () => {
     const prev = (lightboxIndex - 1 + allPhotos.length) % allPhotos.length;
+    setLightboxDepth(null);
     setLightboxIndex(prev);
     setShowFullImage(allPhotos[prev]?.url || null);
+  };
+
+  const handleEnable3d = async () => {
+    setOrientationEnabled(await requestOrientationPermission());
   };
 
   return (
@@ -173,7 +212,10 @@ export default function PreviewPage() {
             className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
           >
             <button
-              onClick={() => setShowFullImage(null)}
+              onClick={() => {
+                setLightboxDepth(null);
+                setShowFullImage(null);
+              }}
               className="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"
             >
               <X className="w-5 h-5 text-white" />
@@ -186,15 +228,40 @@ export default function PreviewPage() {
               <ChevronLeft className="w-5 h-5 text-white" />
             </button>
             
-            <motion.img
-              key={showFullImage}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              src={showFullImage}
-              alt=""
-              className="max-w-[90%] max-h-[80%] object-contain rounded-[8px]"
-            />
+            {lightboxDepthUrl ? (
+              <>
+                {!orientationEnabled && (
+                  <button
+                    type="button"
+                    onClick={handleEnable3d}
+                    className="absolute top-16 left-1/2 -translate-x-1/2 h-10 rounded-[10px] bg-[#d4af37] px-4 text-[13px] font-semibold text-[#0a0a0a]"
+                  >
+                    Увімкнути 3D
+                  </button>
+                )}
+                <motion.div
+                  key={`${showFullImage}-depth`}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="w-[90vw] max-w-[900px] max-h-[80vh] aspect-[4/3] rounded-[8px]"
+                >
+                  <Suspense fallback={null}>
+                    <DepthViewer photoUrl={showFullImage} depthUrl={lightboxDepthUrl} className="h-full w-full rounded-[8px]" />
+                  </Suspense>
+                </motion.div>
+              </>
+            ) : (
+              <motion.img
+                key={showFullImage}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                src={showFullImage}
+                alt=""
+                className="max-w-[90%] max-h-[80%] object-contain rounded-[8px]"
+              />
+            )}
             
             <button
               onClick={nextPhoto}

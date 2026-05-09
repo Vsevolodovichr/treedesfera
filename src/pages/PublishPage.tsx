@@ -1,40 +1,136 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Copy, Check, Globe, Eye, ExternalLink } from 'lucide-react';
+import { Copy, Check, Globe, Eye, ExternalLink, AlertCircle } from 'lucide-react';
 import { useStore } from '../store';
+import { publishTour, uploadTourPhoto } from '../lib/api';
+import { getDepth } from '../lib/depth/storage';
 import QRCode from 'qrcode';
+
+const PUBLIC_TOUR_BASE_URL = (import.meta.env.VITE_PUBLIC_TOUR_BASE_URL || `${window.location.origin}/tour`).replace(/\/$/, '');
+const DEPTH_ENABLED = import.meta.env.VITE_DEPTH_ENABLED !== 'false';
+
+interface PublishIssue {
+  message: string;
+  path: string;
+  roomIndex?: number;
+}
 
 export default function PublishPage() {
   const navigate = useNavigate();
-  const { property, setTourSlug, setPublished, tourSlug, isPublished } = useStore();
+  const { property, rooms, floorPlan, setCurrentRoomIndex, setTourSlug, setPublished, tourSlug, isPublished } = useStore();
   const [published, setPubState] = useState(isPublished);
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [slug] = useState(() => {
+  const [validationIssues, setValidationIssues] = useState<PublishIssue[]>([]);
+  const [publishError, setPublishError] = useState<string | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [slug, setSlug] = useState(() => {
     if (tourSlug) return tourSlug;
     const base = property?.shortName?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'tour';
     return `${base}-${Date.now().toString(36).slice(-6)}`;
   });
 
-  const publicUrl = `https://xatosfera.pp.ua/tour/${slug}`;
+  const publicUrl = `${PUBLIC_TOUR_BASE_URL}/${slug}`;
+
+  const getPublishIssues = () => {
+    const issues: PublishIssue[] = [];
+    const activeRooms = rooms.filter((room) => room.active);
+
+    activeRooms.forEach((room, roomIndex) => {
+      const usablePhotos = room.photos.filter((photo) => photo.status !== 'rejected');
+      const averageScore = usablePhotos.length
+        ? Math.round(usablePhotos.reduce((sum, photo) => sum + photo.qualityScore, 0) / usablePhotos.length)
+        : 0;
+
+      if (usablePhotos.length < 3) {
+        issues.push({
+          message: `${room.name}: потрібно мінімум 3 фото без rejected`,
+          path: '/camera',
+          roomIndex,
+        });
+      }
+
+      if (averageScore < 60) {
+        issues.push({
+          message: `${room.name}: середній qualityScore ${averageScore}, потрібно 60+`,
+          path: '/camera',
+          roomIndex,
+        });
+      }
+    });
+
+    return issues;
+  };
 
   const handlePublish = async () => {
+    const issues = getPublishIssues();
+    if (issues.length > 0) {
+      setValidationIssues(issues);
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishError(null);
+    let publishedSlug = slug;
+
+    if (property?.id) {
+      try {
+        for (const room of rooms.filter((item) => item.active)) {
+          for (const photo of room.photos.filter((item) => item.status !== 'rejected')) {
+            const response = await fetch(photo.url);
+            if (!response.ok) throw new Error('photo_fetch_failed');
+            const photoBlob = await response.blob();
+            const photoFile = new File([photoBlob], `${photo.id}.jpg`, { type: photoBlob.type || 'image/jpeg' });
+            const depth = DEPTH_ENABLED && photo.depthStatus === 'ready' ? await getDepth(photo.id) : null;
+            await uploadTourPhoto(
+              property.id,
+              photoFile,
+              {
+                room_id: room.id,
+                photo_id: photo.id,
+                photo_type: photo.type,
+                quality_score: photo.qualityScore,
+              },
+              depth?.blob,
+            );
+            if (depth) URL.revokeObjectURL(depth.url);
+          }
+        }
+        const tour = await publishTour(property.id, true);
+        publishedSlug = tour.slug || slug;
+        setSlug(publishedSlug);
+      } catch {
+        setPublishError('Не вдалося опублікувати тур');
+        setIsPublishing(false);
+        return;
+      }
+    }
+
     setPublished(true);
     setPubState(true);
-    setTourSlug(slug);
+    setTourSlug(publishedSlug);
     
-    // Generate QR
     try {
-      const dataUrl = await QRCode.toDataURL(publicUrl, {
+      const dataUrl = await QRCode.toDataURL(`${PUBLIC_TOUR_BASE_URL}/${publishedSlug}`, {
         width: 200,
         margin: 2,
         color: { dark: '#d4af37', light: '#0a0a0a' },
       });
       setQrDataUrl(dataUrl);
     } catch {
-      // ignore
+      setQrDataUrl(null);
     }
+
+    setIsPublishing(false);
+  };
+
+  const handleFixIssue = () => {
+    const issue = validationIssues[0];
+    if (!issue) return;
+    if (typeof issue.roomIndex === 'number') setCurrentRoomIndex(issue.roomIndex);
+    setValidationIssues([]);
+    navigate(issue.path);
   };
 
   const handleCopy = () => {
@@ -81,9 +177,10 @@ export default function PublishPage() {
           
           <button
             onClick={handlePublish}
+            disabled={isPublishing}
             className={`w-14 h-8 rounded-full relative transition-colors ${
               published ? 'bg-[#d4af37]' : 'bg-[#2a2a2a]'
-            }`}
+            } disabled:opacity-60`}
           >
             <motion.div
               animate={{ x: published ? 24 : 2 }}
@@ -93,6 +190,12 @@ export default function PublishPage() {
           </button>
         </div>
       </motion.div>
+
+      {!floorPlan?.imageUrl && (
+        <p className="mt-3 text-center text-[12px] text-[#888]">План приміщення не додано, тур можна опублікувати без нього.</p>
+      )}
+
+      {publishError && <p className="mt-3 text-center text-[12px] text-[#f87171]">{publishError}</p>}
 
       {/* Published Content */}
       {published && (
@@ -204,6 +307,40 @@ export default function PublishPage() {
           На головну
         </button>
       </div>
+
+      {validationIssues.length > 0 && (
+        <div className="fixed inset-0 z-50 flex items-end bg-black/70 px-4 pb-4">
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="w-full max-w-[480px] mx-auto rounded-[20px] border border-white/[0.08] bg-[#141414] p-5"
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#facc15]" />
+              <div>
+                <h3 className="text-[16px] font-semibold text-[#f5f5f5]">Потрібно виправити перед публікацією</h3>
+                <div className="mt-3 space-y-2">
+                  {validationIssues.map((issue) => (
+                    <p key={issue.message} className="text-[13px] leading-5 text-[#b8b8b8]">{issue.message}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={handleFixIssue}
+              className="mt-5 h-12 w-full rounded-[12px] bg-[#d4af37] text-[14px] font-semibold text-[#0a0a0a]"
+            >
+              Перейти до фікса
+            </button>
+            <button
+              onClick={() => setValidationIssues([])}
+              className="mt-2 h-10 w-full text-[13px] font-medium text-[#888]"
+            >
+              Закрити
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

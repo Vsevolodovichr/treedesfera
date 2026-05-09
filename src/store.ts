@@ -1,4 +1,20 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
+import { createStore, del, get, set } from 'idb-keyval';
+import type { AuthUser } from './types/api';
+import type { DeviceCaps } from './lib/depth/capabilities';
+import { clearAllDepth } from './lib/depth/storage';
+
+export type StoreUser = AuthUser & { agency: string };
+
+export type DepthRunTelemetry = {
+  depthSuccess: number;
+  depthFailed: number;
+  depthSkipped: number;
+  avgInferenceMs: number;
+  device: 'webgpu' | 'wasm';
+  modelLoadMs: number;
+};
 
 export type RoomType = 'kitchen' | 'living' | 'bedroom' | 'bathroom' | 'hallway' | 'balcony' | 'wardrobe' | 'storage' | 'office' | 'garden' | 'garage' | 'terrace' | 'basement' | 'other';
 
@@ -23,6 +39,8 @@ export interface Photo {
   qualityScore: number;
   status: 'accepted' | 'warning' | 'rejected';
   issues: string[];
+  depthUrl?: string;
+  depthStatus?: 'none' | 'pending' | 'ready' | 'failed' | 'skipped';
 }
 
 export interface Property {
@@ -54,7 +72,7 @@ export interface Hotspot {
 export interface AppState {
   // Auth
   isAuthenticated: boolean;
-  user: { name: string; email: string; agency: string } | null;
+  user: StoreUser | null;
   
   // Navigation
   currentScreen: string;
@@ -77,10 +95,16 @@ export interface AppState {
   // Tour
   tourSlug: string | null;
   isPublished: boolean;
+
+  // Depth
+  deviceCaps: DeviceCaps | null;
+  lastDepthRun: DepthRunTelemetry | null;
   
   // Actions
   setAuthenticated: (val: boolean) => void;
   setUser: (user: AppState['user']) => void;
+  setDeviceCaps: (caps: DeviceCaps) => void;
+  setLastDepthRun: (run: DepthRunTelemetry) => void;
   setScreen: (screen: string) => void;
   goBack: () => void;
   setProperty: (property: Property) => void;
@@ -90,6 +114,7 @@ export interface AppState {
   updateRoom: (id: string, updates: Partial<Room>) => void;
   setCurrentRoomIndex: (index: number) => void;
   addPhotoToRoom: (roomId: string, photo: Photo) => void;
+  setPhotoDepth: (roomId: string, photoId: string, update: { depthUrl?: string; depthStatus: Photo['depthStatus'] }) => void;
   setCurrentShotIndex: (index: number) => void;
   setTourSlug: (slug: string | null) => void;
   setPublished: (val: boolean) => void;
@@ -117,13 +142,25 @@ const initialState = {
   currentShotIndex: 0,
   tourSlug: null,
   isPublished: false,
+  deviceCaps: null,
+  lastDepthRun: null,
 };
 
-export const useStore = create<AppState>((set, get) => ({
+const appStateStore = createStore('xatosfera-capture-state', 'app-state');
+
+const indexedDbStorage: StateStorage = {
+  getItem: (name) => get<string>(name, appStateStore).then((value) => value ?? null),
+  setItem: (name, value) => set(name, value, appStateStore),
+  removeItem: (name) => del(name, appStateStore),
+};
+
+export const useStore = create<AppState>()(persist((set, get) => ({
   ...initialState,
   
   setAuthenticated: (val) => set({ isAuthenticated: val }),
   setUser: (user) => set({ user }),
+  setDeviceCaps: (deviceCaps) => set({ deviceCaps }),
+  setLastDepthRun: (lastDepthRun) => set({ lastDepthRun }),
   setScreen: (screen) => set({ previousScreen: get().currentScreen, currentScreen: screen }),
   goBack: () => {
     const { previousScreen } = get();
@@ -141,13 +178,31 @@ export const useStore = create<AppState>((set, get) => ({
   setCurrentRoomIndex: (index) => set({ currentRoomIndex: index }),
   addPhotoToRoom: (roomId, photo) => set((state) => ({
     rooms: state.rooms.map((r) =>
-      r.id === roomId ? { ...r, photos: [...r.photos, photo] } : r
+      r.id === roomId ? { ...r, photos: [...r.photos, { ...photo, depthStatus: 'none' }] } : r
     )
+  })),
+  setPhotoDepth: (roomId, photoId, update) => set((state) => ({
+    rooms: state.rooms.map((room) =>
+      room.id === roomId
+        ? {
+            ...room,
+            photos: room.photos.map((photo) =>
+              photo.id === photoId ? { ...photo, ...update } : photo
+            ),
+          }
+        : room
+    ),
   })),
   setCurrentShotIndex: (index) => set({ currentShotIndex: index }),
   setTourSlug: (slug) => set({ tourSlug: slug }),
   setPublished: (val) => set({ isPublished: val }),
-  reset: () => set(initialState),
+  reset: () => {
+    void clearAllDepth();
+    set(initialState);
+  },
+}), {
+  name: 'xatosfera-capture-state',
+  storage: createJSONStorage(() => indexedDbStorage),
 }));
 
 export const roomIcons: Record<RoomType, string> = {

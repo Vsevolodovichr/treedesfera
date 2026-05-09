@@ -10,47 +10,68 @@
 }
 
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #141414;
-  --bg-elevated: #1a1a1a;
-  --gold: #d4af37;
-  --gold-light: #e8c547;
-  --gold-dark: #b8962e;
-  --gold-ghost: rgba(212, 175, 55, 0.12);
-  --text-primary: #f5f5f5;
-  --text-secondary: #888888;
-  --text-muted: #555555;
+  /* Surfaces — near-black, faintly cool to harmonise with magenta */
+  --bg-primary: #0a070d;
+  --bg-secondary: #14101a;
+  --bg-elevated: #1a1422;
+
+  /* Brand — magenta/violet pulled from the logo */
+  --accent: #d100d9;
+  --accent-light: #e84efa;
+  --accent-dark: #9d00a8;
+  --accent-deep: #6a006e;
+  --accent-ghost: rgba(209, 0, 217, 0.12);
+  --accent-glow: rgba(209, 0, 217, 0.35);
+
+  /* Legacy aliases (kept for any code still using --gold-*) */
+  --gold: var(--accent);
+  --gold-light: var(--accent-light);
+  --gold-dark: var(--accent-dark);
+  --gold-ghost: var(--accent-ghost);
+
+  /* Text */
+  --text-primary: #f5f0fa;
+  --text-secondary: #a08fb0;
+  --text-muted: #5a4d68;
+
+  /* Status */
   --success: #4ade80;
   --warning: #facc15;
   --danger: #f87171;
   --info: #60a5fa;
+
+  /* Glass / overlay */
   --glass: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --overlay: rgba(0, 0, 0, 0.85);
+  --glass-border: rgba(232, 78, 250, 0.10);
+  --overlay: rgba(8, 4, 12, 0.85);
+
+  /* Radii */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 9999px;
-  --background: 0 0% 4%;
-  --foreground: 0 0% 96%;
-  --card: 0 0% 8%;
-  --card-foreground: 0 0% 96%;
-  --popover: 0 0% 8%;
-  --popover-foreground: 0 0% 96%;
-  --primary: 45 65% 52%;
-  --primary-foreground: 0 0% 4%;
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 0 0% 96%;
-  --muted: 0 0% 10%;
-  --muted-foreground: 0 0% 53%;
-  --accent: 0 0% 10%;
-  --accent-foreground: 0 0% 96%;
+
+  /* shadcn HSL tokens */
+  --background: 270 25% 5%;
+  --foreground: 285 30% 96%;
+  --card: 270 25% 9%;
+  --card-foreground: 285 30% 96%;
+  --popover: 270 25% 9%;
+  --popover-foreground: 285 30% 96%;
+  --primary: 295 100% 43%;
+  --primary-foreground: 270 25% 5%;
+  --secondary: 270 25% 11%;
+  --secondary-foreground: 285 30% 96%;
+  --muted: 270 25% 11%;
+  --muted-foreground: 280 10% 60%;
+  --accent-hsl: 270 25% 11%;
+  --accent-foreground: 285 30% 96%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 12%;
-  --input: 0 0% 12%;
-  --ring: 45 65% 52%;
+  --border: 270 25% 14%;
+  --input: 270 25% 14%;
+  --ring: 295 100% 43%;
   --radius: 12px;
 }
 
@@ -59,9 +80,13 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#0a0a0a] text-[#f5f5f5] font-sans antialiased;
+    @apply bg-[#0a070d] text-[#f5f0fa] font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(209, 0, 217, 0.10), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(106, 0, 110, 0.12), transparent 60%);
+    background-attachment: fixed;
   }
   input, textarea, select {
     font-size: 16px !important;
@@ -72,20 +97,32 @@
   button {
     -webkit-tap-highlight-color: transparent;
   }
+  ::selection {
+    background: rgba(209, 0, 217, 0.4);
+    color: #fff;
+  }
 }
+
+/* Animations -------------------------------------------------------- */
 
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-@keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); }
+@keyframes pulse-accent {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(209, 0, 217, 0.45); }
+  50%      { box-shadow: 0 0 0 10px rgba(209, 0, 217, 0); }
+}
+
+/* Back-compat: code referenced .animate-pulse-gold — keep the class, retune the animation */
+@keyframes pulse-gold { /* alias */
+  0%, 100% { box-shadow: 0 0 0 0 rgba(209, 0, 217, 0.45); }
+  50%      { box-shadow: 0 0 0 10px rgba(209, 0, 217, 0); }
 }
 
 @keyframes flash {
-  0% { opacity: 1; }
+  0%   { opacity: 1; }
   100% { opacity: 0; }
 }
 
@@ -99,68 +136,77 @@
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideInRight {
   from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  to   { transform: translateX(0); }
 }
 
 @keyframes slideOutRight {
   from { transform: translateX(0); }
-  to { transform: translateX(100%); }
+  to   { transform: translateX(100%); }
 }
 
 @keyframes slideUp {
   from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  to   { transform: translateY(0); }
 }
 
 @keyframes slideDown {
   from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  to   { transform: translateY(100%); }
 }
 
+@keyframes auraDrift {
+  0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: .6; }
+  50%      { transform: translate3d(2%, -2%, 0) scale(1.05); opacity: .9; }
+}
+
+/* Utilities --------------------------------------------------------- */
+
 .animate-shimmer {
-  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background: linear-gradient(90deg, #14101a 25%, #241830 50%, #14101a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-.animate-pulse-gold {
-  animation: pulse-gold 1.5s infinite;
+.animate-pulse-gold,
+.animate-pulse-accent {
+  animation: pulse-accent 1.5s infinite;
 }
 
-.animate-shake {
-  animation: shake 0.4s ease-in-out;
+.animate-shake          { animation: shake 0.4s ease-in-out; }
+.animate-fade-in-up     { animation: fadeInUp 0.3s ease-out forwards; }
+.animate-scale-in       { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-slide-in-right { animation: slideInRight 0.3s ease-out forwards; }
+.animate-slide-up       { animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-aura-drift     { animation: auraDrift 8s ease-in-out infinite; }
+
+/* Magenta gradient text — for headings and brand wordmarks */
+.text-gradient-accent {
+  background: linear-gradient(135deg, #e84efa 0%, #d100d9 50%, #9d00a8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out forwards;
+/* Brand button — primary CTA */
+.btn-accent {
+  background: linear-gradient(135deg, #e84efa 0%, #d100d9 60%, #9d00a8 100%);
+  color: #0a070d;
+  box-shadow: 0 8px 24px -8px rgba(209, 0, 217, 0.55), inset 0 1px 0 rgba(255,255,255,.3);
 }
+.btn-accent:active { transform: scale(0.98); }
 
-.animate-scale-in {
-  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+/* Soft chip background (used everywhere as bg-[rgba(209,0,217,0.12)]) */
+.bg-accent-ghost { background-color: rgba(209, 0, 217, 0.12); }
 
-.animate-slide-in-right {
-  animation: slideInRight 0.3s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
