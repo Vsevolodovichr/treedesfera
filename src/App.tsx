@@ -1,0 +1,120 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useStore } from './store';
+import MobileHeader from './components/MobileHeader';
+import LoginPage from './pages/LoginPage';
+import StartPage from './pages/StartPage';
+import PropertyNewPage from './pages/PropertyNewPage';
+import PropertySelectPage from './pages/PropertySelectPage';
+import PlanSetupPage from './pages/PlanSetupPage';
+import RoomSetupPage from './pages/RoomSetupPage';
+import CameraPage from './pages/CameraPage';
+import ReviewPage from './pages/ReviewPage';
+import PropertyReviewPage from './pages/PropertyReviewPage';
+import PreviewPage from './pages/PreviewPage';
+import PublishPage from './pages/PublishPage';
+import PublicTourPage from './pages/PublicTourPage';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
+}
+
+function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] font-sans max-w-[480px] mx-auto relative overflow-hidden">
+      <MobileHeader />
+      <main className="pt-[56px] min-h-screen">{children}</main>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-black">
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/tour/:slug" element={<PublicTourPage />} />
+        <Route
+          path="/start"
+          element={
+            <ProtectedRoute>
+              <AppLayout><StartPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/property/new"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PropertyNewPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/property/select"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PropertySelectPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/plan"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PlanSetupPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rooms"
+          element={
+            <ProtectedRoute>
+              <AppLayout><RoomSetupPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/camera"
+          element={
+            <ProtectedRoute>
+              <CameraPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review"
+          element={
+            <ProtectedRoute>
+              <AppLayout><ReviewPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/property-review"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PropertyReviewPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/preview"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PreviewPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/publish"
+          element={
+            <ProtectedRoute>
+              <AppLayout><PublishPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </div>
+  );
+}
