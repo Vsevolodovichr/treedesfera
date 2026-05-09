@@ -339,7 +339,7 @@ export default function CameraPage() {
 
       {/* Fallback if no camera */}
       {!stream && (
-        <div className="absolute inset-0 bg-[#0a0a0a] flex items-center justify-center">
+        <div className="absolute inset-0 bg-[#0a070d] flex items-center justify-center">
           <img
             src={`/room-${currentRoom?.type || 'living'}.jpg`}
             alt="Room preview"
@@ -349,13 +349,13 @@ export default function CameraPage() {
       )}
 
       {cameraPermission === 'denied' && (
-        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 z-[45] rounded-[16px] border border-[#f87171]/30 bg-[#141414]/95 p-5 text-center">
+        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 z-[45] rounded-[16px] border border-[#f87171]/30 bg-[#14101a]/95 p-5 text-center">
           <AlertCircle className="w-7 h-7 text-[#f87171] mx-auto mb-3" />
           <p className="text-[15px] font-semibold text-white">Доступ до камери заблоковано</p>
-          <p className="text-[12px] leading-5 text-[#b8b8b8] mt-1">Дозвольте камеру в налаштуваннях браузера або продовжуйте з офлайн-заглушкою.</p>
+          <p className="text-[12px] leading-5 text-[#b8a8c8] mt-1">Дозвольте камеру в налаштуваннях браузера або продовжуйте з офлайн-заглушкою.</p>
           <button
             onClick={() => void startCamera()}
-            className="mt-4 h-10 px-4 rounded-[12px] bg-[#d4af37] text-[#0a0a0a] text-[13px] font-semibold"
+            className="mt-4 h-10 px-4 rounded-[12px] bg-[#d100d9] text-[#0a070d] text-[13px] font-semibold"
           >
             Спробувати ще раз
           </button>
@@ -407,9 +407,9 @@ export default function CameraPage() {
           transition={{ duration: 0.2 }}
           className="absolute top-20 left-4 right-4 z-40"
         >
-          <div className="bg-[rgba(0,0,0,0.5)] backdrop-blur-lg border border-white/[0.08] rounded-[16px] px-5 py-4 text-center">
+          <div className="bg-[rgba(0,0,0,0.5)] backdrop-blur-lg border border-[rgba(232,78,250,0.10)] rounded-[16px] px-5 py-4 text-center">
             <p className="text-[16px] font-semibold text-white">{instruction.text}</p>
-            <p className="text-[12px] text-[#888] mt-1">{positionLabel} · {instruction.type}</p>
+            <p className="text-[12px] text-[#a08fb0] mt-1">{positionLabel} · {instruction.type}</p>
           </div>
         </motion.div>
       </AnimatePresence>
@@ -417,14 +417,14 @@ export default function CameraPage() {
       {orientationPermission === 'required' && (
         <button
           onClick={handleEnableLevel}
-          className="absolute top-[154px] left-1/2 -translate-x-1/2 z-40 h-9 px-4 rounded-full bg-black/50 backdrop-blur-sm border border-white/[0.08] text-[12px] font-medium text-white"
+          className="absolute top-[154px] left-1/2 -translate-x-1/2 z-40 h-9 px-4 rounded-full bg-black/50 backdrop-blur-sm border border-[rgba(232,78,250,0.10)] text-[12px] font-medium text-white"
         >
           Увімкнути рівень
         </button>
       )}
 
       {orientationPermission === 'denied' && (
-        <div className="absolute top-[154px] left-4 right-4 z-40 rounded-[12px] bg-black/50 backdrop-blur-sm border border-white/[0.08] px-4 py-2 text-center text-[12px] text-[#facc15]">
+        <div className="absolute top-[154px] left-4 right-4 z-40 rounded-[12px] bg-black/50 backdrop-blur-sm border border-[rgba(232,78,250,0.10)] px-4 py-2 text-center text-[12px] text-[#facc15]">
           Рівень недоступний без дозволу на рух
         </div>
       )}
@@ -434,7 +434,7 @@ export default function CameraPage() {
           <div className="relative h-10">
             <div className="absolute left-0 right-0 top-1/2 h-px bg-white/25" />
             <div
-              className="absolute left-0 right-0 top-1/2 h-0.5 bg-[#d4af37] shadow-[0_0_12px_rgba(212,175,55,0.6)] transition-transform"
+              className="absolute left-0 right-0 top-1/2 h-0.5 bg-[#d100d9] shadow-[0_0_12px_rgba(209,0,217,0.6)] transition-transform"
               style={{ transform: `translateY(${levelOffset}px) rotate(${tilt.gamma}deg)` }}
             />
           </div>
@@ -446,27 +446,27 @@ export default function CameraPage() {
         <svg viewBox="0 0 100 100" className="w-[70vw] h-[70vw] max-w-[320px] max-h-[320px] opacity-40">
           {instruction.type === 'wide' || instruction.type === 'wide_full' ? (
             <>
-              <rect x="10" y="20" width="80" height="60" fill="none" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="2" />
-              <circle cx="12" cy="22" r="3" fill="none" stroke="rgba(212,175,55,0.6)" />
+              <rect x="10" y="20" width="80" height="60" fill="none" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="2" />
+              <circle cx="12" cy="22" r="3" fill="none" stroke="rgba(209,0,217,0.6)" />
               <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.15)" strokeWidth="0.3" />
             </>
           ) : instruction.type === 'doorway' ? (
             <>
-              <rect x="35" y="10" width="30" height="55" fill="none" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="1" />
-              <line x1="50" y1="10" x2="50" y2="65" stroke="rgba(212,175,55,0.4)" strokeWidth="0.3" strokeDasharray="2,2" />
+              <rect x="35" y="10" width="30" height="55" fill="none" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="1" />
+              <line x1="50" y1="10" x2="50" y2="65" stroke="rgba(209,0,217,0.4)" strokeWidth="0.3" strokeDasharray="2,2" />
             </>
           ) : instruction.type === 'window' ? (
             <>
-              <rect x="25" y="25" width="50" height="35" fill="none" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="1" />
-              <line x1="25" y1="42" x2="75" y2="42" stroke="rgba(212,175,55,0.4)" strokeWidth="0.3" />
-              <line x1="50" y1="25" x2="50" y2="60" stroke="rgba(212,175,55,0.4)" strokeWidth="0.3" />
+              <rect x="25" y="25" width="50" height="35" fill="none" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="1" />
+              <line x1="25" y1="42" x2="75" y2="42" stroke="rgba(209,0,217,0.4)" strokeWidth="0.3" />
+              <line x1="50" y1="25" x2="50" y2="60" stroke="rgba(209,0,217,0.4)" strokeWidth="0.3" />
             </>
           ) : instruction.type === 'detail' ? (
             <>
-              <rect x="30" y="30" width="40" height="40" fill="none" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="2" />
-              <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(212,175,55,0.6)" strokeWidth="0.5" />
-              <line x1="42" y1="50" x2="58" y2="50" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" />
-              <line x1="50" y1="42" x2="50" y2="58" stroke="rgba(212,175,55,0.5)" strokeWidth="0.5" />
+              <rect x="30" y="30" width="40" height="40" fill="none" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" strokeDasharray="3,3" rx="2" />
+              <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(209,0,217,0.6)" strokeWidth="0.5" />
+              <line x1="42" y1="50" x2="58" y2="50" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" />
+              <line x1="50" y1="42" x2="50" y2="58" stroke="rgba(209,0,217,0.5)" strokeWidth="0.5" />
             </>
           ) : (
             <>
@@ -495,7 +495,7 @@ export default function CameraPage() {
             {capturedPhotos.length > 0 ? (
               <img src={capturedPhotos[capturedPhotos.length - 1].dataUrl} alt="" className="w-full h-full object-cover" />
             ) : (
-              <ImageIcon className="w-5 h-5 text-[#888]" />
+              <ImageIcon className="w-5 h-5 text-[#a08fb0]" />
             )}
           </button>
 
@@ -504,7 +504,7 @@ export default function CameraPage() {
             onClick={capturePhoto}
             className="relative w-[72px] h-[72px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
           >
-            <div className="absolute inset-0 rounded-full border-4 border-[#d4af37]" />
+            <div className="absolute inset-0 rounded-full border-4 border-[#d100d9]" />
             <div className="w-14 h-14 rounded-full bg-white" />
           </button>
 
@@ -514,7 +514,7 @@ export default function CameraPage() {
               <div
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i < shotIndex ? 'bg-[#d4af37]' : i === shotIndex ? 'bg-[#d4af37] animate-pulse' : 'bg-[#555]'
+                  i < shotIndex ? 'bg-[#d100d9]' : i === shotIndex ? 'bg-[#d100d9] animate-pulse' : 'bg-[#555]'
                 }`}
               />
             ))}
@@ -528,7 +528,7 @@ export default function CameraPage() {
             animate={{ opacity: 1, y: 0 }}
             onClick={handleNextRoom}
             disabled={isSavingRoom}
-            className="mt-4 w-full h-12 bg-[#d4af37] text-[#0a0a0a] font-semibold rounded-[12px] flex items-center justify-center gap-2 disabled:opacity-70"
+            className="mt-4 w-full h-12 bg-[#d100d9] text-[#0a070d] font-semibold rounded-[12px] flex items-center justify-center gap-2 disabled:opacity-70"
           >
             {isSavingRoom ? 'Збереження...' : currentRoomIndex < activeRooms.length - 1 ? 'Наступна кімната' : 'Завершити зйомку'}
             <ChevronRight className="w-4 h-4" />
@@ -572,13 +572,13 @@ export default function CameraPage() {
                     : 'bg-[#f87171]'
                 }`}
               >
-                <span className="text-[18px] font-bold text-[#0a0a0a]">{lastCapture.qualityScore}</span>
-                <span className="text-[9px] font-medium text-[#0a0a0a]">оцінка</span>
+                <span className="text-[18px] font-bold text-[#0a070d]">{lastCapture.qualityScore}</span>
+                <span className="text-[9px] font-medium text-[#0a070d]">оцінка</span>
               </motion.div>
             </div>
 
             {/* Quality Feedback */}
-            <div className="bg-[#141414] rounded-t-[24px] p-6">
+            <div className="bg-[#14101a] rounded-t-[24px] p-6">
               <div className="w-10 h-1 rounded-full bg-[#333] mx-auto mb-4" />
               
               {lastCapture.status === 'accepted' ? (
@@ -604,7 +604,7 @@ export default function CameraPage() {
                     </button>
                     <button
                       onClick={handleAcceptAnyway}
-                      className="flex-1 h-11 bg-[#d4af37] text-[#0a0a0a] rounded-[12px] text-[14px] font-semibold"
+                      className="flex-1 h-11 bg-[#d100d9] text-[#0a070d] rounded-[12px] text-[14px] font-semibold"
                     >
                       Прийняти
                     </button>

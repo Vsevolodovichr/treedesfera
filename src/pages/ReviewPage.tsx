@@ -30,10 +30,10 @@ export default function ReviewPage() {
     <div className="min-h-screen px-4 pt-6 pb-28">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f5f5]">
+        <h2 className="text-[22px] font-semibold text-[#f5f0fa]">
           Перевірка зйомки
         </h2>
-        <p className="text-[14px] text-[#888] mt-1">
+        <p className="text-[14px] text-[#a08fb0] mt-1">
           {completedRooms.length} з {activeRooms.length} кімнат готові
         </p>
       </motion.div>
@@ -47,7 +47,7 @@ export default function ReviewPage() {
       >
         <div className="relative w-24 h-24">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1a1a" strokeWidth="6" />
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1422" strokeWidth="6" />
             <motion.circle
               cx="50" cy="50" r="42" fill="none"
               stroke={overallScore >= 70 ? '#4ade80' : overallScore >= 40 ? '#facc15' : '#f87171'}
@@ -60,18 +60,18 @@ export default function ReviewPage() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[28px] font-bold text-[#f5f5f5]">{overallScore}</span>
+            <span className="text-[28px] font-bold text-[#f5f0fa]">{overallScore}</span>
           </div>
         </div>
-        <p className="text-[13px] text-[#888] mt-2">Загальна оцінка</p>
+        <p className="text-[13px] text-[#a08fb0] mt-2">Загальна оцінка</p>
       </motion.div>
 
       {/* Room Cards */}
       <div className="mt-8 space-y-3">
         {activeRooms.map((room, index) => {
           const roomScore = room.qualityScore || 0;
-          const scoreColor = roomScore >= 70 ? 'text-[#4ade80]' : roomScore >= 40 ? 'text-[#facc15]' : roomScore > 0 ? 'text-[#f87171]' : 'text-[#555]';
-          const bgColor = room.status === 'completed' ? 'bg-[#141414]' : room.status === 'capturing' ? 'bg-[#141414]' : 'bg-[#141414]/50';
+          const scoreColor = roomScore >= 70 ? 'text-[#4ade80]' : roomScore >= 40 ? 'text-[#facc15]' : roomScore > 0 ? 'text-[#f87171]' : 'text-[#5a4d68]';
+          const bgColor = room.status === 'completed' ? 'bg-[#14101a]' : room.status === 'capturing' ? 'bg-[#14101a]' : 'bg-[#14101a]/50';
           
           return (
             <motion.button
@@ -80,23 +80,23 @@ export default function ReviewPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + index * 0.05 }}
               onClick={() => setSelectedRoomId(selectedRoomId === room.id ? null : room.id)}
-              className={`w-full text-left ${bgColor} border border-white/[0.08] rounded-[16px] p-4 transition-all`}
+              className={`w-full text-left ${bgColor} border border-[rgba(232,78,250,0.10)] rounded-[16px] p-4 transition-all`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    room.status === 'completed' ? 'bg-[rgba(212,175,55,0.15)]' : 'bg-[#1a1a1a]'
+                    room.status === 'completed' ? 'bg-[rgba(209,0,217,0.15)]' : 'bg-[#1a1422]'
                   }`}>
-                    <span className="text-[#d4af37] text-sm font-bold">{room.name.charAt(0)}</span>
+                    <span className="text-[#d100d9] text-sm font-bold">{room.name.charAt(0)}</span>
                   </div>
                   <div>
-                    <p className="text-[15px] font-semibold text-[#f5f5f5]">{room.name}</p>
+                    <p className="text-[15px] font-semibold text-[#f5f0fa]">{room.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-[12px] font-medium ${scoreColor}`}>
                         {room.status === 'completed' ? `${roomScore}/100` : 'Не знято'}
                       </span>
-                      <span className="text-[#555] text-[11px]">·</span>
-                      <span className="text-[12px] text-[#888]">{room.photos.length} фото</span>
+                      <span className="text-[#5a4d68] text-[11px]">·</span>
+                      <span className="text-[12px] text-[#a08fb0]">{room.photos.length} фото</span>
                     </div>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export default function ReviewPage() {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-4 pt-4 border-t border-white/[0.08]"
+                  className="mt-4 pt-4 border-t border-[rgba(232,78,250,0.10)]"
                 >
                   <div className="grid grid-cols-3 gap-2">
                     {room.photos.map((photo) => (
@@ -130,7 +130,7 @@ export default function ReviewPage() {
                       </div>
                     ))}
                     {/* Add more button */}
-                    <button className="aspect-[4/3] rounded-[8px] border border-dashed border-[rgba(212,175,55,0.3)] flex items-center justify-center text-[#d4af37]">
+                    <button className="aspect-[4/3] rounded-[8px] border border-dashed border-[rgba(209,0,217,0.3)] flex items-center justify-center text-[#d100d9]">
                       <Camera className="w-5 h-5" />
                     </button>
                   </div>
@@ -157,15 +157,15 @@ export default function ReviewPage() {
       </div>
 
       {showDepthBlock && (
-        <div className="mt-6 rounded-[16px] border border-white/[0.08] bg-[#141414] p-4">
+        <div className="mt-6 rounded-[16px] border border-[rgba(232,78,250,0.10)] bg-[#14101a] p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-[16px] font-semibold text-[#f5f5f5]">3D-перегляд</h3>
+              <h3 className="text-[16px] font-semibold text-[#f5f0fa]">3D-перегляд</h3>
               {depthBatch.status === 'done' && (
-                <p className="mt-1 text-[13px] text-[#888]">3D готово для {readyDepthPhotos} фото · {withoutDepthPhotos} без 3D</p>
+                <p className="mt-1 text-[13px] text-[#a08fb0]">3D готово для {readyDepthPhotos} фото · {withoutDepthPhotos} без 3D</p>
               )}
               {depthBatch.status === 'cancelled' && (
-                <p className="mt-1 text-[13px] text-[#888]">3D пропущено</p>
+                <p className="mt-1 text-[13px] text-[#a08fb0]">3D пропущено</p>
               )}
             </div>
             {depthBatch.status === 'idle' && (
@@ -173,14 +173,14 @@ export default function ReviewPage() {
                 <button
                   type="button"
                   onClick={depthBatch.start}
-                  className="h-10 rounded-[10px] bg-[#d4af37] px-3 text-[13px] font-semibold text-[#0a0a0a]"
+                  className="h-10 rounded-[10px] bg-[#d100d9] px-3 text-[13px] font-semibold text-[#0a070d]"
                 >
                   Підготувати 3D
                 </button>
                 <button
                   type="button"
                   onClick={depthBatch.skip}
-                  className="h-10 rounded-[10px] border border-white/[0.08] px-3 text-[13px] text-[#f5f5f5]"
+                  className="h-10 rounded-[10px] border border-[rgba(232,78,250,0.10)] px-3 text-[13px] text-[#f5f0fa]"
                 >
                   Пропустити
                 </button>
@@ -190,26 +190,26 @@ export default function ReviewPage() {
 
           {depthBatch.status === 'loading-model' && (
             <div className="mt-4">
-              <div className="mb-2 flex justify-between text-[12px] text-[#888]">
+              <div className="mb-2 flex justify-between text-[12px] text-[#a08fb0]">
                 <span>Завантаження AI-моделі (~50 MB), це разово</span>
                 <span>{Math.round(depthBatch.modelLoadProgress * 100)}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full bg-[#d4af37]" style={{ width: `${Math.round(depthBatch.modelLoadProgress * 100)}%` }} />
+                <div className="h-full bg-[#d100d9]" style={{ width: `${Math.round(depthBatch.modelLoadProgress * 100)}%` }} />
               </div>
             </div>
           )}
 
           {depthBatch.status === 'processing' && (
             <div className="mt-4">
-              <div className="mb-2 flex items-center justify-between text-[12px] text-[#888]">
+              <div className="mb-2 flex items-center justify-between text-[12px] text-[#a08fb0]">
                 <span>{depthBatch.processed}/{depthBatch.total} фото</span>
-                <button type="button" onClick={depthBatch.skip} className="text-[#d4af37]">
+                <button type="button" onClick={depthBatch.skip} className="text-[#d100d9]">
                   Пропустити решту
                 </button>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full bg-[#d4af37]" style={{ width: `${depthBatch.total ? Math.round((depthBatch.processed / depthBatch.total) * 100) : 0}%` }} />
+                <div className="h-full bg-[#d100d9]" style={{ width: `${depthBatch.total ? Math.round((depthBatch.processed / depthBatch.total) * 100) : 0}%` }} />
               </div>
             </div>
           )}
@@ -217,10 +217,10 @@ export default function ReviewPage() {
       )}
 
       {/* Continue Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
         <button
           onClick={handleContinue}
-          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center gap-2"
+          className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center gap-2"
         >
           Продовжити
           <ChevronRight className="w-4 h-4" />

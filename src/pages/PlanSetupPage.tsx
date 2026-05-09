@@ -135,8 +135,8 @@ export default function PlanSetupPage() {
     return (
       <div className="min-h-screen px-4 pt-6 pb-28">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 className="text-[22px] font-semibold text-[#f5f5f5] mb-1">План приміщення</h2>
-          <p className="text-[14px] text-[#888] mb-6">Оберіть спосіб додавання плану</p>
+          <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">План приміщення</h2>
+          <p className="text-[14px] text-[#a08fb0] mb-6">Оберіть спосіб додавання плану</p>
         </motion.div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -163,26 +163,26 @@ export default function PlanSetupPage() {
                 disabled={card.disabled}
                 className={`relative flex flex-col items-center text-center p-5 rounded-[16px] border transition-all ${
                   card.primary && !card.disabled
-                    ? 'bg-[rgba(212,175,55,0.12)] border-[rgba(212,175,55,0.2)]'
+                    ? 'bg-[rgba(209,0,217,0.12)] border-[rgba(209,0,217,0.2)]'
                     : card.disabled
-                    ? 'bg-[#141414] border-white/[0.08] opacity-40'
-                    : 'bg-[#141414] border-white/[0.08]'
+                    ? 'bg-[#14101a] border-[rgba(232,78,250,0.10)] opacity-40'
+                    : 'bg-[#14101a] border-[rgba(232,78,250,0.10)]'
                 } ${card.disabled ? '' : 'active:scale-[0.97]'}`}
               >
                 {card.badge && (
-                  <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#d4af37] text-[#0a0a0a] text-[10px] font-bold rounded-full">
+                  <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#d100d9] text-[#0a070d] text-[10px] font-bold rounded-full">
                     {card.badge}
                   </span>
                 )}
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${
-                    card.primary ? 'bg-[rgba(212,175,55,0.2)]' : 'bg-[#1a1a1a]'
+                    card.primary ? 'bg-[rgba(209,0,217,0.2)]' : 'bg-[#1a1422]'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${card.primary ? 'text-[#d4af37]' : 'text-[#888]'}`} />
+                  <Icon className={`w-5 h-5 ${card.primary ? 'text-[#d100d9]' : 'text-[#a08fb0]'}`} />
                 </div>
-                <h3 className="text-[14px] font-semibold text-[#f5f5f5]">{card.title}</h3>
-                <p className="text-[12px] text-[#888] mt-1">{card.desc}</p>
+                <h3 className="text-[14px] font-semibold text-[#f5f0fa]">{card.title}</h3>
+                <p className="text-[12px] text-[#a08fb0] mt-1">{card.desc}</p>
               </motion.button>
             );
           })}
@@ -196,13 +196,13 @@ export default function PlanSetupPage() {
           onChange={handleFileSelect}
         />
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
           <button
             onClick={() => {
               setFloorPlan(null);
               navigate('/rooms');
             }}
-            className="w-full h-[56px] border border-[rgba(212,175,55,0.3)] text-[#d4af37] font-semibold text-[15px] rounded-[12px] transition-all hover:bg-[rgba(212,175,55,0.08)]"
+            className="w-full h-[56px] border border-[rgba(209,0,217,0.3)] text-[#d100d9] font-semibold text-[15px] rounded-[12px] transition-all hover:bg-[rgba(209,0,217,0.08)]"
           >
             Пропустити цей крок
           </button>
@@ -216,18 +216,18 @@ export default function PlanSetupPage() {
     <div className="min-h-screen flex flex-col">
       {/* Plan Area */}
       <div className="flex-1 px-4 pt-4 pb-4">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[13px] text-[#888] mb-3 text-center">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[13px] text-[#a08fb0] mb-3 text-center">
           Торкніться плану, щоб розмістити точку кімнати
         </motion.p>
 
         <div
           ref={planRef}
           onClick={handlePlanTap}
-          className="relative w-full aspect-square bg-[#141414] rounded-[16px] overflow-hidden border border-white/[0.08] cursor-crosshair"
+          className="relative w-full aspect-square bg-[#14101a] rounded-[16px] overflow-hidden border border-[rgba(232,78,250,0.10)] cursor-crosshair"
         >
           {planImage && planType === 'pdf' && (
             <object data={planImage} type="application/pdf" className="w-full h-full bg-white">
-              <div className="flex h-full items-center justify-center text-[12px] text-[#888]">PDF-план завантажено</div>
+              <div className="flex h-full items-center justify-center text-[12px] text-[#a08fb0]">PDF-план завантажено</div>
             </object>
           )}
 
@@ -262,8 +262,8 @@ export default function PlanSetupPage() {
               style={{ left: `${h.x}%`, top: `${h.y}%`, transform: 'translate(-50%, -50%)' }}
             >
               <div className="relative animate-pulse-gold">
-                <div className="w-10 h-10 rounded-full bg-[rgba(212,175,55,0.25)] border-2 border-[#d4af37] flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-[11px] font-bold text-[#d4af37]">{h.label.charAt(0)}</span>
+                <div className="w-10 h-10 rounded-full bg-[rgba(209,0,217,0.25)] border-2 border-[#d100d9] flex items-center justify-center backdrop-blur-sm">
+                  <span className="text-[11px] font-bold text-[#d100d9]">{h.label.charAt(0)}</span>
                 </div>
                 <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-white font-medium whitespace-nowrap bg-black/60 px-1.5 py-0.5 rounded">
                   {h.label}
@@ -277,7 +277,7 @@ export default function PlanSetupPage() {
         {hotspots.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-wrap gap-2">
             {hotspots.map((h) => (
-              <span key={h.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.2)] rounded-full text-[12px] text-[#d4af37]">
+              <span key={h.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(209,0,217,0.1)] border border-[rgba(209,0,217,0.2)] rounded-full text-[12px] text-[#d100d9]">
                 {h.label}
                 <button onClick={() => handleRemoveHotspot(h.id)} className="ml-1">
                   <X className="w-3 h-3" />
@@ -304,23 +304,23 @@ export default function PlanSetupPage() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-[#141414] rounded-t-[24px] p-6 max-w-[480px] mx-auto"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-[#14101a] rounded-t-[24px] p-6 max-w-[480px] mx-auto"
             >
               <div className="w-10 h-1 rounded-full bg-[#333] mx-auto mb-5" />
-              <h3 className="text-[18px] font-semibold text-[#f5f5f5] mb-4">Оберіть кімнату</h3>
+              <h3 className="text-[18px] font-semibold text-[#f5f0fa] mb-4">Оберіть кімнату</h3>
               <div className="space-y-2 max-h-[300px] overflow-y-auto no-scrollbar">
                 {activeRooms.map((room) => (
                   <button
                     key={room.id}
                     onClick={() => handleRoomSelect(room)}
-                    className="w-full flex items-center gap-3 p-3 rounded-[12px] bg-[#1a1a1a] hover:bg-[#222] transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-[12px] bg-[#1a1422] hover:bg-[#222] transition-colors text-left"
                   >
-                    <div className="w-10 h-10 rounded-full bg-[rgba(212,175,55,0.15)] flex items-center justify-center">
-                      <span className="text-[#d4af37] text-sm font-bold">{room.name.charAt(0)}</span>
+                    <div className="w-10 h-10 rounded-full bg-[rgba(209,0,217,0.15)] flex items-center justify-center">
+                      <span className="text-[#d100d9] text-sm font-bold">{room.name.charAt(0)}</span>
                     </div>
                     <div>
-                      <p className="text-[14px] font-medium text-[#f5f5f5]">{room.name}</p>
-                      <p className="text-[12px] text-[#888]">{roomTypeLabels[room.type]}</p>
+                      <p className="text-[14px] font-medium text-[#f5f0fa]">{room.name}</p>
+                      <p className="text-[12px] text-[#a08fb0]">{roomTypeLabels[room.type]}</p>
                     </div>
                   </button>
                 ))}
@@ -331,7 +331,7 @@ export default function PlanSetupPage() {
       </AnimatePresence>
 
       {/* Bottom Actions */}
-      <div className="p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent">
+      <div className="p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent">
         <div className="flex gap-3">
           <button
             onClick={() => {
@@ -341,7 +341,7 @@ export default function PlanSetupPage() {
               setPlanType('image');
               setHotspots([]);
             }}
-            className="flex-1 h-[52px] border border-white/[0.15] text-[#888] font-medium rounded-[12px] flex items-center justify-center gap-2"
+            className="flex-1 h-[52px] border border-white/[0.15] text-[#a08fb0] font-medium rounded-[12px] flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             Скинути
@@ -349,7 +349,7 @@ export default function PlanSetupPage() {
           <button
             onClick={handleConfirm}
             disabled={isSaving}
-            className="flex-[2] h-[52px] bg-[#d4af37] text-[#0a0a0a] font-semibold rounded-[12px] flex items-center justify-center gap-2 disabled:opacity-60"
+            className="flex-[2] h-[52px] bg-[#d100d9] text-[#0a070d] font-semibold rounded-[12px] flex items-center justify-center gap-2 disabled:opacity-60"
           >
             <Check className="w-4 h-4" />
             {isSaving ? 'Збереження...' : 'Підтвердити план'}

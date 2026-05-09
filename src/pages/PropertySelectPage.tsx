@@ -10,7 +10,7 @@ import type { ApiProperty } from '../types/api';
 function statusClass(status?: string | null) {
   if (status === 'active') return 'bg-[rgba(74,222,128,0.15)] text-[#4ade80]';
   if (status === 'sold') return 'bg-[rgba(248,113,113,0.15)] text-[#f87171]';
-  return 'bg-[rgba(212,175,55,0.15)] text-[#d4af37]';
+  return 'bg-[rgba(209,0,217,0.15)] text-[#d100d9]';
 }
 
 function statusLabel(status?: string | null) {
@@ -54,14 +54,14 @@ export default function PropertySelectPage() {
   return (
     <div className="min-h-screen pb-8">
       {/* Search Bar */}
-      <div className="sticky top-0 z-20 bg-[#0a0a0a]/90 backdrop-blur-lg px-4 py-3 border-b border-white/[0.08]">
+      <div className="sticky top-0 z-20 bg-[#0a070d]/90 backdrop-blur-lg px-4 py-3 border-b border-[rgba(232,78,250,0.10)]">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#555]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a4d68]" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Пошук за адресою..."
-            className="w-full h-12 pl-10 pr-4 bg-[#141414] border border-white/[0.08] rounded-[12px] text-[#f5f5f5] placeholder-[#555] text-[15px] focus:border-[#d4af37] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)] transition-all outline-none"
+            className="w-full h-12 pl-10 pr-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[15px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
           />
         </div>
       </div>
@@ -71,18 +71,18 @@ export default function PropertySelectPage() {
         {propertiesQuery.isLoading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Building2 className="w-16 h-16 text-[#333] mb-4" />
-            <p className="text-[#888] text-[15px]">Завантаження об'єктів...</p>
+            <p className="text-[#a08fb0] text-[15px]">Завантаження об'єктів...</p>
           </div>
         ) : propertiesQuery.isError ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Building2 className="w-16 h-16 text-[#333] mb-4" />
-            <p className="text-[#888] text-[15px]">Не вдалося завантажити об'єкти</p>
+            <p className="text-[#a08fb0] text-[15px]">Не вдалося завантажити об'єкти</p>
           </div>
         ) : properties.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Building2 className="w-16 h-16 text-[#333] mb-4" />
-            <p className="text-[#888] text-[15px]">Об'єктів не знайдено</p>
-            <p className="text-[#555] text-[13px] mt-1">Спробуйте змінити запит пошуку</p>
+            <p className="text-[#a08fb0] text-[15px]">Об'єктів не знайдено</p>
+            <p className="text-[#5a4d68] text-[13px] mt-1">Спробуйте змінити запит пошуку</p>
           </div>
         ) : (
           properties.map((prop, index) => (
@@ -94,14 +94,14 @@ export default function PropertySelectPage() {
               whileTap={{ scale: 0.98 }}
               onClick={() => handleSelect(prop)}
               disabled={selectedId === prop.id}
-              className="w-full text-left bg-[#141414] border border-white/[0.08] rounded-[12px] p-4 flex items-center gap-4 transition-all hover:border-[rgba(212,175,55,0.2)] disabled:opacity-60"
+              className="w-full text-left bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] p-4 flex items-center gap-4 transition-all hover:border-[rgba(209,0,217,0.2)] disabled:opacity-60"
             >
-              <div className="w-12 h-12 rounded-full bg-[#1a1a1a] flex items-center justify-center shrink-0">
-                <Building2 className="w-5 h-5 text-[#888]" />
+              <div className="w-12 h-12 rounded-full bg-[#1a1422] flex items-center justify-center shrink-0">
+                <Building2 className="w-5 h-5 text-[#a08fb0]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold text-[#f5f5f5] truncate">{prop.address}</p>
-                <p className="text-[13px] text-[#888] mt-0.5">
+                <p className="text-[14px] font-semibold text-[#f5f0fa] truncate">{prop.address}</p>
+                <p className="text-[13px] text-[#a08fb0] mt-0.5">
                   {formatPropertyType(prop.type)} · {prop.rooms || 0} кімн.{prop.area ? ` · ${prop.area} м²` : ''}
                 </p>
               </div>

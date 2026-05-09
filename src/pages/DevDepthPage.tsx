@@ -69,7 +69,7 @@ export default function DevDepthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] px-4 py-6">
+    <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] px-4 py-6">
       <div className="mx-auto flex w-full max-w-[480px] flex-col gap-4">
         <h1 className="text-xl font-semibold">Depth dev</h1>
         <input
@@ -82,7 +82,7 @@ export default function DevDepthPage() {
           type="button"
           onClick={handleEstimate}
           disabled={!file || loading}
-          className="h-11 rounded-lg bg-[#d4af37] px-4 font-semibold text-black disabled:opacity-50"
+          className="h-11 rounded-lg bg-[#d100d9] px-4 font-semibold text-black disabled:opacity-50"
         >
           {loading ? 'Estimating...' : 'Estimate'}
         </button>
@@ -103,9 +103,9 @@ export default function DevDepthPage() {
             Load photo_test
           </button>
         </div>
-        {storageStatus && <p className="text-sm text-[#d4af37]">{storageStatus}</p>}
+        {storageStatus && <p className="text-sm text-[#d100d9]">{storageStatus}</p>}
         <div className="h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full bg-[#d4af37]" style={{ width: `${Math.round(progress * 100)}%` }} />
+          <div className="h-full bg-[#d100d9]" style={{ width: `${Math.round(progress * 100)}%` }} />
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {resultUrl && <img src={resultUrl} alt="Depth result" className="w-full rounded-lg border border-white/10" />}

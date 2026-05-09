@@ -275,29 +275,29 @@ export default function PublicTourPage() {
 
   if (tourQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] flex items-center justify-center">
-        <p className="text-[14px] text-[#888]">Завантаження туру...</p>
+      <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] flex items-center justify-center">
+        <p className="text-[14px] text-[#a08fb0]">Завантаження туру...</p>
       </div>
     );
   }
 
   if (tourQuery.isError || !tourData || allPhotos.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] flex items-center justify-center px-6 text-center">
-        <p className="text-[14px] text-[#888]">Тур недоступний або ще не опублікований</p>
+      <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] flex items-center justify-center px-6 text-center">
+        <p className="text-[14px] text-[#a08fb0]">Тур недоступний або ще не опублікований</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] font-sans">
+    <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] font-sans">
       <div className="relative h-[280px] overflow-hidden">
         <img
           src={allPhotos[0].url}
           alt="Property"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/30 to-transparent" />
         
         <button
           onClick={() => window.history.back()}
@@ -309,7 +309,7 @@ export default function PublicTourPage() {
         <div className="absolute bottom-4 left-4 right-4">
           <h1 className="text-[22px] font-bold text-white">{tourData.property.address}</h1>
           <div className="flex items-center gap-4 mt-2">
-            <span className="text-[24px] font-bold text-[#d4af37]">
+            <span className="text-[24px] font-bold text-[#d100d9]">
               {tourData.property.price.toLocaleString()} {tourData.property.currency}
             </span>
           </div>
@@ -342,8 +342,8 @@ export default function PublicTourPage() {
           transition={{ delay: 0.1 }}
           className="px-4 mt-6"
         >
-          <h2 className="text-[18px] font-semibold text-[#f5f5f5] mb-3">Планування</h2>
-          <div className="relative bg-[#141414] border border-white/[0.08] rounded-[16px] overflow-hidden">
+          <h2 className="text-[18px] font-semibold text-[#f5f0fa] mb-3">Планування</h2>
+          <div className="relative bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] overflow-hidden">
             <img
               src={tourData.floorPlan}
               alt="Floor Plan"
@@ -361,13 +361,13 @@ export default function PublicTourPage() {
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold transition-all ${
                     isSelected
-                      ? 'bg-[#d4af37] text-[#0a0a0a] scale-110'
-                      : 'bg-[rgba(212,175,55,0.3)] text-[#d4af37] border border-[#d4af37]/40'
+                      ? 'bg-[#d100d9] text-[#0a070d] scale-110'
+                      : 'bg-[rgba(209,0,217,0.3)] text-[#d100d9] border border-[#d100d9]/40'
                   }`}>
                     {hotspot.label.charAt(0)}
                   </div>
                   <span className={`absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap px-1 rounded transition-all ${
-                    isSelected ? 'bg-[#d4af37] text-[#0a0a0a] font-medium' : 'bg-black/60 text-white'
+                    isSelected ? 'bg-[#d100d9] text-[#0a070d] font-medium' : 'bg-black/60 text-white'
                   }`}>
                     {hotspot.label}
                   </span>
@@ -382,16 +382,16 @@ export default function PublicTourPage() {
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          className="px-4 mt-4 bg-[#141414] border border-white/[0.08] rounded-[16px] p-4 mx-4"
+          className="px-4 mt-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-4 mx-4"
         >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-[16px] font-semibold text-[#f5f5f5]">{selectedRoom.name}</h3>
-              {selectedRoom.area ? <p className="text-[13px] text-[#888]">{selectedRoom.area} м²</p> : null}
+              <h3 className="text-[16px] font-semibold text-[#f5f0fa]">{selectedRoom.name}</h3>
+              {selectedRoom.area ? <p className="text-[13px] text-[#a08fb0]">{selectedRoom.area} м²</p> : null}
             </div>
             <button
               onClick={openSelectedRoom}
-              className="px-4 h-9 bg-[#d4af37] text-[#0a0a0a] text-[13px] font-medium rounded-full"
+              className="px-4 h-9 bg-[#d100d9] text-[#0a070d] text-[13px] font-medium rounded-full"
             >
               Переглянути
             </button>
@@ -400,7 +400,7 @@ export default function PublicTourPage() {
       )}
 
       <div className="px-4 mt-6">
-        <h2 className="text-[18px] font-semibold text-[#f5f5f5] mb-4">Фото кімнат</h2>
+        <h2 className="text-[18px] font-semibold text-[#f5f0fa] mb-4">Фото кімнат</h2>
         
         {tourData.rooms.map((room, index) => (
           <motion.div
@@ -411,15 +411,15 @@ export default function PublicTourPage() {
             className="mb-5"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[14px] font-medium text-[#f5f5f5]">{room.name}</h3>
-              {room.area ? <span className="text-[12px] text-[#888]">{room.area} м²</span> : null}
+              <h3 className="text-[14px] font-medium text-[#f5f0fa]">{room.name}</h3>
+              {room.area ? <span className="text-[12px] text-[#a08fb0]">{room.area} м²</span> : null}
             </div>
             <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
               {room.photos.map((photo, photoIndex) => (
                 <button
                   key={`${room.id}-${photoIndex}`}
                   onClick={() => openPhoto(photo)}
-                  className="snap-start flex-shrink-0 w-full max-w-[300px] h-[180px] rounded-[12px] overflow-hidden border border-white/[0.08] active:scale-[0.98] transition-transform"
+                  className="snap-start flex-shrink-0 w-full max-w-[300px] h-[180px] rounded-[12px] overflow-hidden border border-[rgba(232,78,250,0.10)] active:scale-[0.98] transition-transform"
                 >
                   {DEPTH_ENABLED && photo.depthUrl ? (
                     <Suspense fallback={<img src={photo.url} alt={room.name} className="w-full h-full object-cover" />}>
@@ -437,10 +437,10 @@ export default function PublicTourPage() {
 
       <div className="h-24" />
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent z-40">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent z-40">
         <button
           onClick={() => setShowContact(true)}
-          className="w-full h-[56px] bg-[#d4af37] text-[#0a0a0a] font-semibold text-[16px] rounded-[14px] flex items-center justify-center gap-2"
+          className="w-full h-[56px] bg-[#d100d9] text-[#0a070d] font-semibold text-[16px] rounded-[14px] flex items-center justify-center gap-2"
         >
           <Phone className="w-5 h-5" />
           Написати менеджеру
@@ -462,39 +462,39 @@ export default function PublicTourPage() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed bottom-0 left-0 right-0 z-[60] bg-[#141414] rounded-t-[24px] p-6"
+              className="fixed bottom-0 left-0 right-0 z-[60] bg-[#14101a] rounded-t-[24px] p-6"
             >
               <div className="w-10 h-1 rounded-full bg-[#333] mx-auto mb-5" />
-              <h3 className="text-[20px] font-semibold text-[#f5f5f5] mb-1">Зв'язатися з менеджером</h3>
-              <p className="text-[14px] text-[#888] mb-5">{tourData.property.agent.name}</p>
+              <h3 className="text-[20px] font-semibold text-[#f5f0fa] mb-1">Зв'язатися з менеджером</h3>
+              <p className="text-[14px] text-[#a08fb0] mb-5">{tourData.property.agent.name}</p>
               
               <div className="space-y-3">
                 {tourData.property.agent.phone ? (
                   <a
                     href={`tel:${tourData.property.agent.phone}`}
-                    className="w-full h-14 bg-[#1a1a1a] rounded-[14px] flex items-center px-5 gap-3 text-[#f5f5f5] hover:bg-[#222] transition-colors"
+                    className="w-full h-14 bg-[#1a1422] rounded-[14px] flex items-center px-5 gap-3 text-[#f5f0fa] hover:bg-[#222] transition-colors"
                   >
-                    <Phone className="w-5 h-5 text-[#d4af37]" />
+                    <Phone className="w-5 h-5 text-[#d100d9]" />
                     <span className="text-[15px]">{tourData.property.agent.phone}</span>
                   </a>
                 ) : null}
                 {tourData.property.agent.email ? (
                   <a
                     href={`mailto:${tourData.property.agent.email}`}
-                    className="w-full h-14 bg-[#1a1a1a] rounded-[14px] flex items-center px-5 gap-3 text-[#f5f5f5] hover:bg-[#222] transition-colors"
+                    className="w-full h-14 bg-[#1a1422] rounded-[14px] flex items-center px-5 gap-3 text-[#f5f0fa] hover:bg-[#222] transition-colors"
                   >
-                    <Mail className="w-5 h-5 text-[#d4af37]" />
+                    <Mail className="w-5 h-5 text-[#d100d9]" />
                     <span className="text-[15px]">{tourData.property.agent.email}</span>
                   </a>
                 ) : null}
                 {!tourData.property.agent.phone && !tourData.property.agent.email ? (
-                  <p className="text-[13px] text-[#888]">Контакти менеджера недоступні</p>
+                  <p className="text-[13px] text-[#a08fb0]">Контакти менеджера недоступні</p>
                 ) : null}
               </div>
               
               <button
                 onClick={() => setShowContact(false)}
-                className="w-full mt-4 h-12 text-[#888] text-[14px] font-medium"
+                className="w-full mt-4 h-12 text-[#a08fb0] text-[14px] font-medium"
               >
                 Скасувати
               </button>
@@ -539,7 +539,7 @@ export default function PublicTourPage() {
                   <button
                     type="button"
                     onClick={enable3d}
-                    className="absolute top-28 left-1/2 z-10 h-10 -translate-x-1/2 rounded-[10px] bg-[#d4af37] px-4 text-[13px] font-semibold text-[#0a0a0a]"
+                    className="absolute top-28 left-1/2 z-10 h-10 -translate-x-1/2 rounded-[10px] bg-[#d100d9] px-4 text-[13px] font-semibold text-[#0a070d]"
                   >
                     Увімкнути 3D
                   </button>
@@ -575,7 +575,7 @@ export default function PublicTourPage() {
               <ChevronRight className="w-5 h-5 text-white" />
             </button>
             
-            <p className="absolute bottom-8 text-[13px] text-[#888] z-10">
+            <p className="absolute bottom-8 text-[13px] text-[#a08fb0] z-10">
               {lightboxIdx + 1} / {allPhotos.length}
             </p>
           </motion.div>

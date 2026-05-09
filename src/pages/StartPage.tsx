@@ -124,10 +124,10 @@ export default function StartPage() {
         transition={{ duration: 0.3 }}
         className="mb-8"
       >
-        <h1 className="text-[22px] font-semibold text-[#f5f5f5] tracking-[-0.01em]">
+        <h1 className="text-[22px] font-semibold text-[#f5f0fa] tracking-[-0.01em]">
           Привіт, {user?.name || 'Агенте'}
         </h1>
-        <p className="text-[14px] text-[#888] mt-1">Що будемо робити сьогодні?</p>
+        <p className="text-[14px] text-[#a08fb0] mt-1">Що будемо робити сьогодні?</p>
       </motion.div>
 
       {/* Cards */}
@@ -147,31 +147,31 @@ export default function StartPage() {
               disabled={isDisabled}
               className={`w-full text-left rounded-[16px] p-5 flex items-center gap-4 transition-all ${
                 card.primary
-                  ? 'bg-[rgba(212,175,55,0.12)] border border-[rgba(212,175,55,0.2)]'
-                  : 'bg-[#141414] border border-white/[0.08]'
+                  ? 'bg-[rgba(209,0,217,0.12)] border border-[rgba(209,0,217,0.2)]'
+                  : 'bg-[#14101a] border border-[rgba(232,78,250,0.10)]'
               } ${isDisabled ? 'opacity-50' : 'active:scale-[0.98]'}`}
             >
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-                  card.primary ? 'bg-[rgba(212,175,55,0.2)]' : 'bg-[#1a1a1a]'
+                  card.primary ? 'bg-[rgba(209,0,217,0.2)]' : 'bg-[#1a1422]'
                 }`}
               >
-                <Icon className={`w-5 h-5 ${card.primary ? 'text-[#d4af37]' : 'text-[#888]'}`} />
+                <Icon className={`w-5 h-5 ${card.primary ? 'text-[#d100d9]' : 'text-[#a08fb0]'}`} />
               </div>
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-[16px] font-semibold text-[#f5f5f5]">{card.title}</h3>
+                  <h3 className="text-[16px] font-semibold text-[#f5f0fa]">{card.title}</h3>
                   {card.badge ? (
-                    <span className="w-5 h-5 rounded-full bg-[#d4af37] text-[#0a0a0a] text-[11px] font-bold flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-[#d100d9] text-[#0a070d] text-[11px] font-bold flex items-center justify-center">
                       {card.badge}
                     </span>
                   ) : null}
                 </div>
-                <p className="text-[13px] text-[#888] mt-0.5">{card.description}</p>
+                <p className="text-[13px] text-[#a08fb0] mt-0.5">{card.description}</p>
               </div>
 
-              <ChevronRight className={`w-5 h-5 shrink-0 ${card.primary ? 'text-[#d4af37]' : 'text-[#555]'}`} />
+              <ChevronRight className={`w-5 h-5 shrink-0 ${card.primary ? 'text-[#d100d9]' : 'text-[#5a4d68]'}`} />
             </motion.button>
           );
         })}
@@ -188,14 +188,14 @@ export default function StartPage() {
               key={draft.id}
               onClick={() => void handleDraftSelect(draft)}
               disabled={selectedDraftId === draft.id}
-              className="w-full rounded-[12px] border border-white/[0.08] bg-[#141414] px-4 py-3 text-left disabled:opacity-60"
+              className="w-full rounded-[12px] border border-[rgba(232,78,250,0.10)] bg-[#14101a] px-4 py-3 text-left disabled:opacity-60"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold text-[#f5f5f5]">{draft.slug}</p>
-                  <p className="mt-0.5 text-[12px] text-[#888]">Оновлено {new Date(draft.updated_at).toLocaleDateString('uk-UA')}</p>
+                  <p className="truncate text-[14px] font-semibold text-[#f5f0fa]">{draft.slug}</p>
+                  <p className="mt-0.5 text-[12px] text-[#a08fb0]">Оновлено {new Date(draft.updated_at).toLocaleDateString('uk-UA')}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 shrink-0 text-[#555]" />
+                <ChevronRight className="w-4 h-4 shrink-0 text-[#5a4d68]" />
               </div>
             </button>
           ))}
@@ -207,12 +207,12 @@ export default function StartPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.25 }}
-          className="mt-5 rounded-[16px] border border-white/[0.08] bg-[#141414] p-4"
+          className="mt-5 rounded-[16px] border border-[rgba(232,78,250,0.10)] bg-[#14101a] p-4"
         >
           {installPrompt ? (
             <button
               onClick={handleInstall}
-              className="w-full h-11 rounded-[12px] bg-[#d4af37] text-[#0a0a0a] text-[14px] font-semibold flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-[12px] bg-[#d100d9] text-[#0a070d] text-[14px] font-semibold flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
               Встановити
@@ -220,9 +220,9 @@ export default function StartPage() {
           ) : (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0">
-                <Share className="w-4 h-4 text-[#d4af37]" />
+                <Share className="w-4 h-4 text-[#d100d9]" />
               </div>
-              <p className="text-[13px] leading-5 text-[#b8b8b8]">iPhone: Поділитися → На головний екран</p>
+              <p className="text-[13px] leading-5 text-[#b8a8c8]">iPhone: Поділитися → На головний екран</p>
             </div>
           )}
         </motion.div>

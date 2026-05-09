@@ -83,18 +83,18 @@ export default function PreviewPage() {
           alt="Property"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/40 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">
           <h2 className="text-[18px] font-semibold text-white">{property?.shortName || 'Об\'єкт'}</h2>
           <div className="flex items-center gap-1 mt-1 text-[13px] text-[#ccc]">
-            <MapPin className="w-3.5 h-3.5 text-[#d4af37]" />
+            <MapPin className="w-3.5 h-3.5 text-[#d100d9]" />
             <span>{property?.address || 'Адреса'}</span>
           </div>
           <div className="flex items-center gap-4 mt-2">
-            <span className="text-[20px] font-bold text-[#d4af37]">
+            <span className="text-[20px] font-bold text-[#d100d9]">
               {property?.price ? `${property.price.toLocaleString()} $` : 'Ціна не вказана'}
             </span>
-            <span className="text-[13px] text-[#888]">
+            <span className="text-[13px] text-[#a08fb0]">
               {property?.rooms} кімн. · {property?.area} м²
             </span>
           </div>
@@ -109,8 +109,8 @@ export default function PreviewPage() {
           transition={{ delay: 0.15 }}
           className="px-4 mt-6"
         >
-          <h3 className="text-[16px] font-semibold text-[#f5f5f5] mb-3">Планування</h3>
-          <div className="relative bg-[#141414] border border-white/[0.08] rounded-[16px] overflow-hidden aspect-square">
+          <h3 className="text-[16px] font-semibold text-[#f5f0fa] mb-3">Планування</h3>
+          <div className="relative bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] overflow-hidden aspect-square">
             <img
               src={floorPlan.imageUrl}
               alt="Floor Plan"
@@ -129,13 +129,13 @@ export default function PreviewPage() {
                 >
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
                     isSelected
-                      ? 'bg-[#d4af37] text-[#0a0a0a] scale-110 animate-pulse-gold'
-                      : 'bg-[rgba(212,175,55,0.3)] text-[#d4af37] border border-[#d4af37]/40'
+                      ? 'bg-[#d100d9] text-[#0a070d] scale-110 animate-pulse-gold'
+                      : 'bg-[rgba(209,0,217,0.3)] text-[#d100d9] border border-[#d100d9]/40'
                   }`}>
                     {hotspot.label.charAt(0)}
                   </div>
                   <span className={`absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-medium whitespace-nowrap px-1.5 py-0.5 rounded transition-all ${
-                    isSelected ? 'bg-[#d4af37] text-[#0a0a0a]' : 'bg-black/60 text-white'
+                    isSelected ? 'bg-[#d100d9] text-[#0a070d]' : 'bg-black/60 text-white'
                   }`}>
                     {hotspot.label}
                   </span>
@@ -148,7 +148,7 @@ export default function PreviewPage() {
 
       {/* Room Gallery */}
       <div className="px-4 mt-6">
-        <h3 className="text-[16px] font-semibold text-[#f5f5f5] mb-3">Кімнати</h3>
+        <h3 className="text-[16px] font-semibold text-[#f5f0fa] mb-3">Кімнати</h3>
         
         {activeRooms.map((room, index) => (
           <motion.div
@@ -159,8 +159,8 @@ export default function PreviewPage() {
             className="mb-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[14px] font-medium text-[#f5f5f5]">{room.name}</p>
-              <span className="text-[12px] text-[#888]">{room.photos.length} фото</span>
+              <p className="text-[14px] font-medium text-[#f5f0fa]">{room.name}</p>
+              <span className="text-[12px] text-[#a08fb0]">{room.photos.length} фото</span>
             </div>
             
             {room.photos.length > 0 ? (
@@ -169,14 +169,14 @@ export default function PreviewPage() {
                   <button
                     key={photo.id}
                     onClick={() => openLightbox(photo.url)}
-                    className="snap-start flex-shrink-0 w-28 h-20 rounded-[10px] overflow-hidden border border-white/[0.08] active:scale-95 transition-transform"
+                    className="snap-start flex-shrink-0 w-28 h-20 rounded-[10px] overflow-hidden border border-[rgba(232,78,250,0.10)] active:scale-95 transition-transform"
                   >
                     <img src={photo.url} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="w-full h-16 bg-[#141414] rounded-[10px] flex items-center justify-center text-[12px] text-[#555]">
+              <div className="w-full h-16 bg-[#14101a] rounded-[10px] flex items-center justify-center text-[12px] text-[#5a4d68]">
                 Фото відсутні
               </div>
             )}
@@ -185,17 +185,17 @@ export default function PreviewPage() {
       </div>
 
       {/* Bottom Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
         <div className="flex gap-3">
           <button
             onClick={() => navigate('/camera')}
-            className="flex-1 h-[52px] border border-white/[0.15] text-[#888] font-medium rounded-[12px] text-[14px] hover:text-[#f5f5f5] transition-colors"
+            className="flex-1 h-[52px] border border-white/[0.15] text-[#a08fb0] font-medium rounded-[12px] text-[14px] hover:text-[#f5f0fa] transition-colors"
           >
             До зйомки
           </button>
           <button
             onClick={() => navigate('/publish')}
-            className="flex-[2] h-[52px] bg-[#d4af37] hover:bg-[#e8c547] text-[#0a0a0a] font-semibold rounded-[12px] text-[15px] transition-all"
+            className="flex-[2] h-[52px] bg-[#d100d9] hover:bg-[#e84efa] text-[#0a070d] font-semibold rounded-[12px] text-[15px] transition-all"
           >
             Опублікувати тур
           </button>
@@ -234,7 +234,7 @@ export default function PreviewPage() {
                   <button
                     type="button"
                     onClick={handleEnable3d}
-                    className="absolute top-16 left-1/2 -translate-x-1/2 h-10 rounded-[10px] bg-[#d4af37] px-4 text-[13px] font-semibold text-[#0a0a0a]"
+                    className="absolute top-16 left-1/2 -translate-x-1/2 h-10 rounded-[10px] bg-[#d100d9] px-4 text-[13px] font-semibold text-[#0a070d]"
                   >
                     Увімкнути 3D
                   </button>
@@ -270,7 +270,7 @@ export default function PreviewPage() {
               <ChevronRight className="w-5 h-5 text-white" />
             </button>
             
-            <p className="absolute bottom-8 text-[13px] text-[#888]">
+            <p className="absolute bottom-8 text-[13px] text-[#a08fb0]">
               {lightboxIndex + 1} / {allPhotos.length}
             </p>
           </motion.div>

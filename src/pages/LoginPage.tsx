@@ -63,12 +63,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a070d] flex flex-col items-center justify-center px-6 relative overflow-hidden">
       {/* Subtle radial gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0f0f0f_0%,_#0a0a0a_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0f0f0f_0%,_#0a070d_70%)]" />
       
       {/* Decorative gold accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-[#d4af37]/[0.03] blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-[#d100d9]/[0.03] blur-3xl" />
       
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -83,7 +83,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="relative z-10 text-[28px] font-bold text-[#f5f5f5] tracking-[-0.02em] mb-2"
+        className="relative z-10 text-[28px] font-bold text-[#f5f0fa] tracking-[-0.02em] mb-2"
       >
         Xatosfera Capture
       </motion.h1>
@@ -92,7 +92,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="relative z-10 text-[14px] text-[#888] mb-10"
+        className="relative z-10 text-[14px] text-[#a08fb0] mb-10"
       >
         Створюйте інтерактивні тури за 15 хвилин
       </motion.p>
@@ -109,7 +109,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full h-[56px] px-4 bg-[#141414] border border-white/[0.08] rounded-[12px] text-[#f5f5f5] placeholder-[#555] text-[16px] focus:border-[#d4af37] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)] transition-all outline-none"
+            className="w-full h-[56px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
             onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
         </div>
@@ -120,12 +120,12 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Пароль"
-            className="w-full h-[56px] px-4 pr-12 bg-[#141414] border border-white/[0.08] rounded-[12px] text-[#f5f5f5] placeholder-[#555] text-[16px] focus:border-[#d4af37] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)] transition-all outline-none"
+            className="w-full h-[56px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
             onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
           <button
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[#888]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[#a08fb0]"
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -138,10 +138,10 @@ export default function LoginPage() {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
+          className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[#0a070d] border-t-transparent rounded-full animate-spin" />
           ) : (
             'Увійти'
           )}
@@ -152,7 +152,7 @@ export default function LoginPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="relative z-10 mt-auto mb-8 text-[12px] text-[#555] hover:text-[#888] transition-colors"
+        className="relative z-10 mt-auto mb-8 text-[12px] text-[#5a4d68] hover:text-[#a08fb0] transition-colors"
         onClick={() => {}}
       >
         ← Повернутися до CRM

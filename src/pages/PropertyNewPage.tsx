@@ -73,8 +73,8 @@ export default function PropertyNewPage() {
   };
 
   const inputClass = (hasError: boolean) =>
-    `w-full h-[56px] px-4 bg-[#141414] border rounded-[12px] text-[#f5f5f5] placeholder-[#555] text-[16px] transition-all outline-none ${
-      hasError ? 'border-[#f87171]' : 'border-white/[0.08] focus:border-[#d4af37] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)]'
+    `w-full h-[56px] px-4 bg-[#14101a] border rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] transition-all outline-none ${
+      hasError ? 'border-[#f87171]' : 'border-[rgba(232,78,250,0.10)] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)]'
     }`;
 
   return (
@@ -82,7 +82,7 @@ export default function PropertyNewPage() {
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-[22px] font-semibold text-[#f5f5f5] mb-6"
+        className="text-[22px] font-semibold text-[#f5f0fa] mb-6"
       >
         Новий об'єкт
       </motion.h2>
@@ -90,16 +90,16 @@ export default function PropertyNewPage() {
       <div className="space-y-5">
         {/* Type Selector */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Тип нерухомості</label>
-          <div className="flex gap-2 bg-[#141414] p-1 rounded-full">
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Тип нерухомості</label>
+          <div className="flex gap-2 bg-[#14101a] p-1 rounded-full">
             {([['apartment', 'Квартира'], ['house', 'Будинок'], ['commercial', 'Комерція']] as const).map(([t, label]) => (
               <button
                 key={t}
                 onClick={() => setType(t)}
                 className={`flex-1 h-10 rounded-full text-[14px] font-medium transition-all ${
                   type === t
-                    ? 'bg-[rgba(212,175,55,0.2)] text-[#d4af37]'
-                    : 'text-[#888] hover:text-[#f5f5f5]'
+                    ? 'bg-[rgba(209,0,217,0.2)] text-[#d100d9]'
+                    : 'text-[#a08fb0] hover:text-[#f5f0fa]'
                 }`}
               >
                 {label}
@@ -110,7 +110,7 @@ export default function PropertyNewPage() {
 
         {/* Address */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Адреса *</label>
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Адреса *</label>
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -122,18 +122,18 @@ export default function PropertyNewPage() {
 
         {/* Rooms Stepper */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Кількість кімнат *</label>
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Кількість кімнат *</label>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setRooms(Math.max(1, rooms - 1))}
-              className="w-11 h-11 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#f5f5f5] active:bg-[#2a2a2a] transition-colors"
+              className="w-11 h-11 rounded-full bg-[#1a1422] flex items-center justify-center text-[#f5f0fa] active:bg-[#241830] transition-colors"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="text-[20px] font-semibold text-[#f5f5f5] w-8 text-center">{rooms}</span>
+            <span className="text-[20px] font-semibold text-[#f5f0fa] w-8 text-center">{rooms}</span>
             <button
               onClick={() => setRooms(Math.min(20, rooms + 1))}
-              className="w-11 h-11 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#f5f5f5] active:bg-[#2a2a2a] transition-colors"
+              className="w-11 h-11 rounded-full bg-[#1a1422] flex items-center justify-center text-[#f5f0fa] active:bg-[#241830] transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -143,7 +143,7 @@ export default function PropertyNewPage() {
         {/* Area & Floor Row */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-3">
           <div className="flex-1">
-            <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Площа, м²</label>
+            <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Площа, м²</label>
             <input
               type="number"
               value={area}
@@ -153,7 +153,7 @@ export default function PropertyNewPage() {
             />
           </div>
           <div className="flex-1">
-            <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Поверх</label>
+            <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Поверх</label>
             <input
               type="number"
               value={floor}
@@ -166,7 +166,7 @@ export default function PropertyNewPage() {
 
         {/* Price */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Ціна *</label>
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Ціна *</label>
           <input
             type="number"
             value={price}
@@ -178,7 +178,7 @@ export default function PropertyNewPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Телефон власника</label>
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Телефон власника</label>
           <input
             type="tel"
             value={ownerPhone}
@@ -190,16 +190,16 @@ export default function PropertyNewPage() {
 
         {/* Deal Type */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Тип угоди</label>
-          <div className="flex gap-2 bg-[#141414] p-1 rounded-full">
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Тип угоди</label>
+          <div className="flex gap-2 bg-[#14101a] p-1 rounded-full">
             {([['sale', 'Продаж'], ['rent', 'Оренда']] as const).map(([t, label]) => (
               <button
                 key={t}
                 onClick={() => setDealType(t)}
                 className={`flex-1 h-10 rounded-full text-[14px] font-medium transition-all ${
                   dealType === t
-                    ? 'bg-[rgba(212,175,55,0.2)] text-[#d4af37]'
-                    : 'text-[#888] hover:text-[#f5f5f5]'
+                    ? 'bg-[rgba(209,0,217,0.2)] text-[#d100d9]'
+                    : 'text-[#a08fb0] hover:text-[#f5f0fa]'
                 }`}
               >
                 {label}
@@ -210,7 +210,7 @@ export default function PropertyNewPage() {
 
         {/* Agent */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Відповідальний агент</label>
+          <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-[0.02em] mb-2 block">Відповідальний агент</label>
           {canSelectManager ? (
             <>
               <select
@@ -234,7 +234,7 @@ export default function PropertyNewPage() {
               {errors.assignedToUserId && <p className="text-[#f87171] text-[12px] mt-1">{errors.assignedToUserId}</p>}
             </>
           ) : (
-            <div className="w-full h-[56px] px-4 bg-[#141414] border border-white/[0.08] rounded-[12px] flex items-center text-[#f5f5f5] opacity-70">
+            <div className="w-full h-[56px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] flex items-center text-[#f5f0fa] opacity-70">
               {agentName}
             </div>
           )}
@@ -242,12 +242,12 @@ export default function PropertyNewPage() {
       </div>
 
       {/* Sticky Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
         {errors.api && <p className="text-[#f87171] text-[12px] mb-2 text-center">{errors.api}</p>}
         <button
           onClick={handleNext}
           disabled={createPropertyMutation.isPending}
-          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all disabled:opacity-60"
+          className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all disabled:opacity-60"
         >
           {createPropertyMutation.isPending ? 'Створення...' : 'Далі'}
         </button>

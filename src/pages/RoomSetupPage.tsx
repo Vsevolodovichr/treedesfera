@@ -77,8 +77,8 @@ export default function RoomSetupPage() {
   return (
     <div className="min-h-screen px-4 pt-6 pb-32">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f5f5] mb-1">Кімнати</h2>
-        <p className="text-[14px] text-[#888] mb-6">Налаштуйте кімнати для зйомки</p>
+        <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">Кімнати</h2>
+        <p className="text-[14px] text-[#a08fb0] mb-6">Налаштуйте кімнати для зйомки</p>
       </motion.div>
 
       <Reorder.Group axis="y" values={items} onReorder={setItems} className="space-y-2">
@@ -88,17 +88,17 @@ export default function RoomSetupPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
-              className={`flex items-center gap-3 bg-[#141414] border border-white/[0.08] rounded-[12px] p-3 transition-opacity ${
+              className={`flex items-center gap-3 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] p-3 transition-opacity ${
                 !room.active ? 'opacity-50' : ''
               }`}
             >
               {/* Drag handle */}
-              <div className="cursor-grab active:cursor-grabbing text-[#555]">
+              <div className="cursor-grab active:cursor-grabbing text-[#5a4d68]">
                 <GripVertical className="w-4 h-4" />
               </div>
 
               {/* Room icon */}
-              <div className="w-10 h-10 rounded-full bg-[rgba(212,175,55,0.12)] flex items-center justify-center text-[#d4af37] shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[rgba(209,0,217,0.12)] flex items-center justify-center text-[#d100d9] shrink-0">
                 {roomIcons[room.type]}
               </div>
 
@@ -111,12 +111,12 @@ export default function RoomSetupPage() {
                     onBlur={saveEdit}
                     onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
                     autoFocus
-                    className="w-full bg-transparent text-[14px] font-medium text-[#f5f5f5] outline-none border-b border-[#d4af37]"
+                    className="w-full bg-transparent text-[14px] font-medium text-[#f5f0fa] outline-none border-b border-[#d100d9]"
                   />
                 ) : (
                   <button onClick={() => startEdit(room)} className="text-left w-full">
-                    <p className="text-[14px] font-medium text-[#f5f5f5] truncate">{room.name}</p>
-                    <p className="text-[11px] text-[#888]">{roomTypeLabels[room.type]}</p>
+                    <p className="text-[14px] font-medium text-[#f5f0fa] truncate">{room.name}</p>
+                    <p className="text-[11px] text-[#a08fb0]">{roomTypeLabels[room.type]}</p>
                   </button>
                 )}
               </div>
@@ -125,7 +125,7 @@ export default function RoomSetupPage() {
               <button
                 onClick={() => toggleActive(room.id)}
                 className={`w-12 h-7 rounded-full relative transition-colors ${
-                  room.active ? 'bg-[#d4af37]' : 'bg-[#2a2a2a]'
+                  room.active ? 'bg-[#d100d9]' : 'bg-[#241830]'
                 }`}
               >
                 <motion.div
@@ -138,7 +138,7 @@ export default function RoomSetupPage() {
               {/* Delete */}
               <button
                 onClick={() => handleDelete(room.id)}
-                className="w-8 h-8 flex items-center justify-center text-[#555] hover:text-[#f87171] transition-colors"
+                className="w-8 h-8 flex items-center justify-center text-[#5a4d68] hover:text-[#f87171] transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -150,23 +150,23 @@ export default function RoomSetupPage() {
       {/* Add Room */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-4">
         {showAdd ? (
-          <div className="flex items-center gap-2 bg-[#141414] border border-white/[0.08] rounded-[12px] p-3">
+          <div className="flex items-center gap-2 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] p-3">
             <input
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               placeholder="Назва кімнати"
-              className="flex-1 bg-transparent text-[14px] text-[#f5f5f5] placeholder-[#555] outline-none"
+              className="flex-1 bg-transparent text-[14px] text-[#f5f0fa] placeholder-[#5a4d68] outline-none"
               onKeyDown={(e) => e.key === 'Enter' && addRoom()}
               autoFocus
             />
-            <button onClick={addRoom} className="px-4 h-8 bg-[#d4af37] text-[#0a0a0a] text-[13px] font-medium rounded-full">
+            <button onClick={addRoom} className="px-4 h-8 bg-[#d100d9] text-[#0a070d] text-[13px] font-medium rounded-full">
               Додати
             </button>
           </div>
         ) : (
           <button
             onClick={() => setShowAdd(true)}
-            className="w-full h-12 border border-dashed border-[rgba(212,175,55,0.3)] rounded-[12px] flex items-center justify-center gap-2 text-[#d4af37] text-[14px] font-medium hover:bg-[rgba(212,175,55,0.05)] transition-colors"
+            className="w-full h-12 border border-dashed border-[rgba(209,0,217,0.3)] rounded-[12px] flex items-center justify-center gap-2 text-[#d100d9] text-[14px] font-medium hover:bg-[rgba(209,0,217,0.05)] transition-colors"
           >
             <Plus className="w-4 h-4" />
             Додати кімнату
@@ -175,10 +175,10 @@ export default function RoomSetupPage() {
       </motion.div>
 
       {/* Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
         <button
           onClick={handleConfirm}
-          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all"
+          className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all"
         >
           Підтвердити кімнати
         </button>

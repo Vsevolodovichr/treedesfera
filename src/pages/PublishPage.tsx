@@ -115,7 +115,7 @@ export default function PublishPage() {
       const dataUrl = await QRCode.toDataURL(`${PUBLIC_TOUR_BASE_URL}/${publishedSlug}`, {
         width: 200,
         margin: 2,
-        color: { dark: '#d4af37', light: '#0a0a0a' },
+        color: { dark: '#d100d9', light: '#0a070d' },
       });
       setQrDataUrl(dataUrl);
     } catch {
@@ -147,8 +147,8 @@ export default function PublishPage() {
     <div className="min-h-screen px-4 pt-6 pb-28">
       {/* Title */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f5f5]">Опублікувати тур</h2>
-        <p className="text-[14px] text-[#888] mt-1">{property?.address}</p>
+        <h2 className="text-[22px] font-semibold text-[#f5f0fa]">Опублікувати тур</h2>
+        <p className="text-[14px] text-[#a08fb0] mt-1">{property?.address}</p>
       </motion.div>
 
       {/* Status Toggle */}
@@ -156,20 +156,20 @@ export default function PublishPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mt-6 bg-[#141414] border border-white/[0.08] rounded-[16px] p-5"
+        className="mt-6 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              published ? 'bg-[rgba(74,222,128,0.15)]' : 'bg-[#1a1a1a]'
+              published ? 'bg-[rgba(74,222,128,0.15)]' : 'bg-[#1a1422]'
             }`}>
-              <Globe className={`w-5 h-5 ${published ? 'text-[#4ade80]' : 'text-[#888]'}`} />
+              <Globe className={`w-5 h-5 ${published ? 'text-[#4ade80]' : 'text-[#a08fb0]'}`} />
             </div>
             <div>
-              <p className="text-[14px] font-semibold text-[#f5f5f5]">
+              <p className="text-[14px] font-semibold text-[#f5f0fa]">
                 {published ? 'Опубліковано' : 'Приховано'}
               </p>
-              <p className="text-[12px] text-[#888]">
+              <p className="text-[12px] text-[#a08fb0]">
                 {published ? 'Тур доступний за посиланням' : 'Тур не доступний публічно'}
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function PublishPage() {
             onClick={handlePublish}
             disabled={isPublishing}
             className={`w-14 h-8 rounded-full relative transition-colors ${
-              published ? 'bg-[#d4af37]' : 'bg-[#2a2a2a]'
+              published ? 'bg-[#d100d9]' : 'bg-[#241830]'
             } disabled:opacity-60`}
           >
             <motion.div
@@ -192,7 +192,7 @@ export default function PublishPage() {
       </motion.div>
 
       {!floorPlan?.imageUrl && (
-        <p className="mt-3 text-center text-[12px] text-[#888]">План приміщення не додано, тур можна опублікувати без нього.</p>
+        <p className="mt-3 text-center text-[12px] text-[#a08fb0]">План приміщення не додано, тур можна опублікувати без нього.</p>
       )}
 
       {publishError && <p className="mt-3 text-center text-[12px] text-[#f87171]">{publishError}</p>}
@@ -205,16 +205,16 @@ export default function PublishPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="mt-4 bg-[#141414] border border-white/[0.08] rounded-[16px] p-5"
+            className="mt-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5"
           >
-            <label className="text-[12px] font-medium text-[#888] uppercase tracking-wider mb-3 block">
+            <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-wider mb-3 block">
               Публічне посилання
             </label>
-            <div className="flex items-center gap-2 bg-[#0a0a0a] border border-white/[0.08] rounded-[12px] px-4 py-3">
-              <span className="flex-1 text-[13px] text-[#f5f5f5] truncate font-mono">{publicUrl}</span>
+            <div className="flex items-center gap-2 bg-[#0a070d] border border-[rgba(232,78,250,0.10)] rounded-[12px] px-4 py-3">
+              <span className="flex-1 text-[13px] text-[#f5f0fa] truncate font-mono">{publicUrl}</span>
               <button
                 onClick={handleCopy}
-                className="w-9 h-9 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#d4af37] active:scale-95 transition-transform shrink-0"
+                className="w-9 h-9 rounded-full bg-[#1a1422] flex items-center justify-center text-[#d100d9] active:scale-95 transition-transform shrink-0"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
@@ -235,9 +235,9 @@ export default function PublishPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 bg-[#141414] border border-white/[0.08] rounded-[16px] p-5 flex flex-col items-center"
+            className="mt-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5 flex flex-col items-center"
           >
-            <label className="text-[12px] font-medium text-[#888] uppercase tracking-wider mb-4 block">
+            <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-wider mb-4 block">
               QR-код
             </label>
             {qrDataUrl ? (
@@ -249,11 +249,11 @@ export default function PublishPage() {
                 className="w-44 h-44 object-contain"
               />
             ) : (
-              <div className="w-44 h-44 bg-[#0a0a0a] border border-white/[0.08] rounded-[12px] flex items-center justify-center">
-                <p className="text-[12px] text-[#555]">QR буде згенеровано</p>
+              <div className="w-44 h-44 bg-[#0a070d] border border-[rgba(232,78,250,0.10)] rounded-[12px] flex items-center justify-center">
+                <p className="text-[12px] text-[#5a4d68]">QR буде згенеровано</p>
               </div>
             )}
-            <p className="text-[12px] text-[#888] mt-3">Відскануйте для відкриття туру</p>
+            <p className="text-[12px] text-[#a08fb0] mt-3">Відскануйте для відкриття туру</p>
           </motion.div>
 
           {/* Share Buttons */}
@@ -261,9 +261,9 @@ export default function PublishPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="mt-4 bg-[#141414] border border-white/[0.08] rounded-[16px] p-5"
+            className="mt-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5"
           >
-            <label className="text-[12px] font-medium text-[#888] uppercase tracking-wider mb-3 block">
+            <label className="text-[12px] font-medium text-[#a08fb0] uppercase tracking-wider mb-3 block">
               Поділитися
             </label>
             <div className="flex gap-3">
@@ -271,7 +271,7 @@ export default function PublishPage() {
                 <button
                   key={app}
                   onClick={handleCopy}
-                  className="flex-1 h-11 bg-[#1a1a1a] rounded-[12px] flex items-center justify-center text-[13px] font-medium text-[#f5f5f5] hover:bg-[#222] transition-colors"
+                  className="flex-1 h-11 bg-[#1a1422] rounded-[12px] flex items-center justify-center text-[13px] font-medium text-[#f5f0fa] hover:bg-[#222] transition-colors"
                 >
                   {app}
                 </button>
@@ -288,7 +288,7 @@ export default function PublishPage() {
           >
             <button
               onClick={handleOpenTour}
-              className="w-full h-14 border border-[rgba(212,175,55,0.3)] text-[#d4af37] rounded-[12px] flex items-center justify-center gap-2 text-[15px] font-medium hover:bg-[rgba(212,175,55,0.08)] transition-colors"
+              className="w-full h-14 border border-[rgba(209,0,217,0.3)] text-[#d100d9] rounded-[12px] flex items-center justify-center gap-2 text-[15px] font-medium hover:bg-[rgba(209,0,217,0.08)] transition-colors"
             >
               <Eye className="w-5 h-5" />
               Відкрити публічний тур
@@ -299,10 +299,10 @@ export default function PublishPage() {
       )}
 
       {/* Back to Start */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
         <button
           onClick={() => navigate('/start')}
-          className="w-full h-[56px] bg-[#d4af37] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all"
+          className="w-full h-[56px] bg-[#d100d9] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all"
         >
           На головну
         </button>
@@ -313,28 +313,28 @@ export default function PublishPage() {
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="w-full max-w-[480px] mx-auto rounded-[20px] border border-white/[0.08] bg-[#141414] p-5"
+            className="w-full max-w-[480px] mx-auto rounded-[20px] border border-[rgba(232,78,250,0.10)] bg-[#14101a] p-5"
           >
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#facc15]" />
               <div>
-                <h3 className="text-[16px] font-semibold text-[#f5f5f5]">Потрібно виправити перед публікацією</h3>
+                <h3 className="text-[16px] font-semibold text-[#f5f0fa]">Потрібно виправити перед публікацією</h3>
                 <div className="mt-3 space-y-2">
                   {validationIssues.map((issue) => (
-                    <p key={issue.message} className="text-[13px] leading-5 text-[#b8b8b8]">{issue.message}</p>
+                    <p key={issue.message} className="text-[13px] leading-5 text-[#b8a8c8]">{issue.message}</p>
                   ))}
                 </div>
               </div>
             </div>
             <button
               onClick={handleFixIssue}
-              className="mt-5 h-12 w-full rounded-[12px] bg-[#d4af37] text-[14px] font-semibold text-[#0a0a0a]"
+              className="mt-5 h-12 w-full rounded-[12px] bg-[#d100d9] text-[14px] font-semibold text-[#0a070d]"
             >
               Перейти до фікса
             </button>
             <button
               onClick={() => setValidationIssues([])}
-              className="mt-2 h-10 w-full text-[13px] font-medium text-[#888]"
+              className="mt-2 h-10 w-full text-[13px] font-medium text-[#a08fb0]"
             >
               Закрити
             </button>
