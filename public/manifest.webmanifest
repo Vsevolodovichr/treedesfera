@@ -1,6 +1,6 @@
 {
-  "name": "Xatosfera Capture",
-  "short_name": "Capture",
+  "name": "3D Хатосфера",
+  "short_name": "3D Хатосфера",
   "start_url": "/start",
   "scope": "/",
   "display": "standalone",

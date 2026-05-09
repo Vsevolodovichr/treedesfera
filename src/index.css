@@ -10,6 +10,8 @@
 }
 
 :root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+
   /* Surfaces — near-black, faintly cool to harmonise with magenta */
   --bg-primary: #0a070d;
   --bg-secondary: #14101a;
@@ -82,6 +84,7 @@
   body {
     @apply bg-[#0a070d] text-[#f5f0fa] font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding-top: var(--safe-area-top);
     overflow-x: hidden;
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -10%, rgba(209, 0, 217, 0.10), transparent 60%),
@@ -101,6 +104,11 @@
     background: rgba(209, 0, 217, 0.4);
     color: #fff;
   }
+}
+
+.fixed.top-0,
+.sticky.top-0 {
+  top: var(--safe-area-top);
 }
 
 /* Animations -------------------------------------------------------- */
