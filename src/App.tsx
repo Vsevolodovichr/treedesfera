@@ -14,6 +14,7 @@ import PropertyReviewPage from './pages/PropertyReviewPage';
 import PreviewPage from './pages/PreviewPage';
 import PublishPage from './pages/PublishPage';
 import PublicTourPage from './pages/PublicTourPage';
+import { BackgroundLayer } from './components/layout/BackgroundLayer';
 
 const DevDepthPage = import.meta.env.DEV ? lazy(() => import('./pages/DevDepthPage')) : null;
 
@@ -36,8 +37,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 bg-[#0a070d] flex justify-center text-[#f5f5f5] font-sans">
-      <div className="relative w-full max-w-[480px] flex flex-col min-h-dvh overflow-hidden">
+    <div className="fixed inset-0 bg-[#0a070d] flex justify-center overflow-hidden text-[#f5f5f5] font-sans">
+      <BackgroundLayer />
+      <div className="relative z-10 w-full max-w-[480px] flex h-dvh flex-col overflow-hidden">
         <MobileHeader />
         <main className="flex-1 overflow-y-auto pt-[56px] pb-[calc(env(safe-area-inset-bottom)+80px)]">
           {children}

@@ -116,7 +116,7 @@ export default function StartPage() {
   };
 
   return (
-    <div className="overflow-hidden px-4 pt-5">
+    <div className="flex min-h-full flex-col overflow-hidden px-4 pt-5">
       {/* Welcome */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -229,7 +229,7 @@ export default function StartPage() {
       ) : null}
 
       {/* Bottom decorative element */}
-      <div className="mt-12 flex justify-center">
+      <div className="mt-auto flex justify-center pb-4 pt-12">
         <div className="w-12 h-1 rounded-full bg-white/[0.08]" />
       </div>
     </div>
