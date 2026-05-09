@@ -1,0 +1,192 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Minus, Plus } from 'lucide-react';
+import { useStore } from '../store';
+
+type PropertyType = 'apartment' | 'house' | 'commercial';
+type DealType = 'sale' | 'rent';
+
+export default function PropertyNewPage() {
+  const navigate = useNavigate();
+  const { setProperty, user } = useStore();
+  const [type, setType] = useState<PropertyType>('apartment');
+  const [address, setAddress] = useState('');
+  const [rooms, setRooms] = useState(2);
+  const [area, setArea] = useState('');
+  const [floor, setFloor] = useState('');
+  const [price, setPrice] = useState('');
+  const [dealType, setDealType] = useState<DealType>('sale');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (address.length < 5) e.address = 'Мінімум 5 символів';
+    if (!price) e.price = 'Вкажіть ціну';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleNext = () => {
+    if (!validate()) return;
+    setProperty({
+      id: 'prop_' + Date.now(),
+      type,
+      address,
+      rooms,
+      area: Number(area) || undefined,
+      floor: Number(floor) || undefined,
+      price: Number(price),
+      dealType,
+      shortName: address.split(',')[0] || 'Об\'єкт',
+      agent: user?.name || 'Агент',
+    });
+    navigate('/plan');
+  };
+
+  const inputClass = (hasError: boolean) =>
+    `w-full h-[56px] px-4 bg-[#141414] border rounded-[12px] text-[#f5f5f5] placeholder-[#555] text-[16px] transition-all outline-none ${
+      hasError ? 'border-[#f87171]' : 'border-white/[0.08] focus:border-[#d4af37] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)]'
+    }`;
+
+  return (
+    <div className="min-h-screen px-4 pt-6 pb-28">
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-[22px] font-semibold text-[#f5f5f5] mb-6"
+      >
+        Новий об'єкт
+      </motion.h2>
+
+      <div className="space-y-5">
+        {/* Type Selector */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Тип нерухомості</label>
+          <div className="flex gap-2 bg-[#141414] p-1 rounded-full">
+            {([['apartment', 'Квартира'], ['house', 'Будинок'], ['commercial', 'Комерція']] as const).map(([t, label]) => (
+              <button
+                key={t}
+                onClick={() => setType(t)}
+                className={`flex-1 h-10 rounded-full text-[14px] font-medium transition-all ${
+                  type === t
+                    ? 'bg-[rgba(212,175,55,0.2)] text-[#d4af37]'
+                    : 'text-[#888] hover:text-[#f5f5f5]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Address */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Адреса *</label>
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="вул. Хрещатик, 15, кв. 42"
+            className={inputClass(!!errors.address)}
+          />
+          {errors.address && <p className="text-[#f87171] text-[12px] mt-1">{errors.address}</p>}
+        </motion.div>
+
+        {/* Rooms Stepper */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Кількість кімнат *</label>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setRooms(Math.max(1, rooms - 1))}
+              className="w-11 h-11 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#f5f5f5] active:bg-[#2a2a2a] transition-colors"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <span className="text-[20px] font-semibold text-[#f5f5f5] w-8 text-center">{rooms}</span>
+            <button
+              onClick={() => setRooms(Math.min(20, rooms + 1))}
+              className="w-11 h-11 rounded-full bg-[#1a1a1a] flex items-center justify-center text-[#f5f5f5] active:bg-[#2a2a2a] transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Area & Floor Row */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-3">
+          <div className="flex-1">
+            <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Площа, м²</label>
+            <input
+              type="number"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              placeholder="65"
+              className={inputClass(false)}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Поверх</label>
+            <input
+              type="number"
+              value={floor}
+              onChange={(e) => setFloor(e.target.value)}
+              placeholder="5"
+              className={inputClass(false)}
+            />
+          </div>
+        </motion.div>
+
+        {/* Price */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Ціна *</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder="120000"
+            className={inputClass(!!errors.price)}
+          />
+          {errors.price && <p className="text-[#f87171] text-[12px] mt-1">{errors.price}</p>}
+        </motion.div>
+
+        {/* Deal Type */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Тип угоди</label>
+          <div className="flex gap-2 bg-[#141414] p-1 rounded-full">
+            {([['sale', 'Продаж'], ['rent', 'Оренда']] as const).map(([t, label]) => (
+              <button
+                key={t}
+                onClick={() => setDealType(t)}
+                className={`flex-1 h-10 rounded-full text-[14px] font-medium transition-all ${
+                  dealType === t
+                    ? 'bg-[rgba(212,175,55,0.2)] text-[#d4af37]'
+                    : 'text-[#888] hover:text-[#f5f5f5]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Agent */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <label className="text-[12px] font-medium text-[#888] uppercase tracking-[0.02em] mb-2 block">Відповідальний агент</label>
+          <div className="w-full h-[56px] px-4 bg-[#141414] border border-white/[0.08] rounded-[12px] flex items-center text-[#f5f5f5] opacity-70">
+            {user?.name || 'Агент'}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Sticky Button */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent max-w-[480px] mx-auto">
+        <button
+          onClick={handleNext}
+          className="w-full h-[56px] bg-[#d4af37] hover:bg-[#e8c547] active:bg-[#b8962e] text-[#0a0a0a] font-semibold text-[15px] rounded-[12px] transition-all"
+        >
+          Далі
+        </button>
+      </div>
+    </div>
+  );
+}
