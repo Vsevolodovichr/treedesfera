@@ -20,7 +20,7 @@ export default function MobileHeader() {
   const showBack = location.pathname !== '/start' && location.pathname !== '/';
 
   return (
-    <header className="sticky top-0 z-30 h-[56px] bg-[#0a070d]/80 backdrop-blur-xl border-b border-white/[0.06] flex items-center px-4 shrink-0">
+    <header className="sticky top-0 z-30 bg-[#0a070d]/80 backdrop-blur-xl border-b border-white/[0.06] flex items-center px-4 shrink-0">
       <div className="flex items-center w-full relative">
         {showBack && (
           <button
