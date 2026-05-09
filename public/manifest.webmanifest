@@ -1,6 +1,6 @@
 {
-  "name": "3D Хатосфера",
-  "short_name": "3D Хатосфера",
+  "name": "3Dсфера",
+  "short_name": "3Dсфера",
   "start_url": "/start",
   "scope": "/",
   "display": "standalone",
