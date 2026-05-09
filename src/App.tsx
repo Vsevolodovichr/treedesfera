@@ -39,9 +39,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 bg-[#0a070d] flex justify-center overflow-hidden text-[#f5f5f5] font-sans">
       <BackgroundLayer />
-      <div className="relative z-10 w-full max-w-[480px] flex h-dvh flex-col overflow-hidden">
+      <div className="relative z-10 w-full max-w-[480px] flex h-dvh flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
         <MobileHeader />
-        <main className="flex-1 overflow-y-auto pt-[56px] pb-[calc(env(safe-area-inset-bottom)+80px)]">
+        <main className="flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]">
           {children}
         </main>
       </div>
