@@ -133,7 +133,7 @@ export default function PlanSetupPage() {
   // Mode Selection
   if (mode === 'select') {
     return (
-      <div className="min-h-screen px-4 pt-6 pb-28">
+      <div className="min-h-dvh px-4 pt-5 pb-0">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">План приміщення</h2>
           <p className="text-[14px] text-[#a08fb0] mb-6">Оберіть спосіб додавання плану</p>
@@ -196,7 +196,7 @@ export default function PlanSetupPage() {
           onChange={handleFileSelect}
         />
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
+        <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
           <button
             onClick={() => {
               setFloorPlan(null);
@@ -213,7 +213,7 @@ export default function PlanSetupPage() {
 
   // Place hotspots mode
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       {/* Plan Area */}
       <div className="flex-1 px-4 pt-4 pb-4">
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[13px] text-[#a08fb0] mb-3 text-center">

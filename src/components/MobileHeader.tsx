@@ -20,12 +20,12 @@ export default function MobileHeader() {
   const showBack = location.pathname !== '/start' && location.pathname !== '/';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[30] h-[56px] bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.08] flex items-center px-4 max-w-[480px] mx-auto">
+    <header className="sticky top-0 z-30 h-[56px] bg-[#0a070d]/80 backdrop-blur-xl border-b border-white/[0.06] flex items-center px-4 shrink-0">
       <div className="flex items-center w-full relative">
         {showBack && (
           <button
             onClick={() => navigate(-1)}
-            className="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full active:bg-white/5 transition-colors"
+            className="absolute left-0 w-11 h-11 flex items-center justify-center rounded-full active:bg-white/5 transition-colors"
             aria-label="Back"
           >
             <ChevronLeft className="w-5 h-5 text-[#f5f5f5]" />

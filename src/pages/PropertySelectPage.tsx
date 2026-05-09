@@ -52,7 +52,7 @@ export default function PropertySelectPage() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
+    <div className="min-h-dvh pb-6">
       {/* Search Bar */}
       <div className="sticky top-0 z-20 bg-[#0a070d]/90 backdrop-blur-lg px-4 py-3 border-b border-[rgba(232,78,250,0.10)]">
         <div className="relative">

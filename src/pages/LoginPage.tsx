@@ -63,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a070d] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-dvh bg-[#0a070d] flex flex-col items-center justify-center px-6 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       {/* Subtle radial gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0f0f0f_0%,_#0a070d_70%)]" />
       

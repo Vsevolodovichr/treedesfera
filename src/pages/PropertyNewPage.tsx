@@ -78,7 +78,7 @@ export default function PropertyNewPage() {
     }`;
 
   return (
-    <div className="min-h-screen px-4 pt-6 pb-28">
+    <div className="min-h-dvh px-4 pt-5 pb-0">
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -242,7 +242,7 @@ export default function PropertyNewPage() {
       </div>
 
       {/* Sticky Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto">
+      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
         {errors.api && <p className="text-[#f87171] text-[12px] mb-2 text-center">{errors.api}</p>}
         <button
           onClick={handleNext}

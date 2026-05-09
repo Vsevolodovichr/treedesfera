@@ -36,16 +36,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] font-sans max-w-[480px] mx-auto relative overflow-hidden">
-      <MobileHeader />
-      <main className="pt-[56px] min-h-screen">{children}</main>
+    <div className="fixed inset-0 bg-[#0a070d] flex justify-center text-[#f5f5f5] font-sans">
+      <div className="relative w-full max-w-[480px] flex flex-col min-h-dvh overflow-hidden">
+        <MobileHeader />
+        <main className="flex-1 overflow-y-auto pt-[56px] pb-[calc(env(safe-area-inset-bottom)+80px)]">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-dvh bg-black">
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/tour/:slug" element={<PublicTourPage />} />

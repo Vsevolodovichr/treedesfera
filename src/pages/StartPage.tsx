@@ -116,7 +116,7 @@ export default function StartPage() {
   };
 
   return (
-    <div className="min-h-screen px-4 pt-6 pb-8">
+    <div className="min-h-dvh px-4 pt-5 pb-6">
       {/* Welcome */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}

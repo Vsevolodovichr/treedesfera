@@ -17,7 +17,7 @@ export default function PropertyReviewPage() {
   const missingCount = activeRooms.filter((r) => r.status !== 'completed').length;
 
   return (
-    <div className="min-h-screen px-4 pt-6 pb-28">
+    <div className="min-h-dvh px-4 pt-5 pb-0">
       {/* Title */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">Огляд об'єкта</h2>
@@ -159,7 +159,7 @@ export default function PropertyReviewPage() {
       )}
 
       {/* Bottom Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d] to-transparent max-w-[480px] mx-auto space-y-3">
+      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))] space-y-3">
         <button
           onClick={() => navigate('/preview')}
           className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center gap-2"
