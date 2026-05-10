@@ -167,18 +167,6 @@ export default function StartPage() {
 
   return (
     <div className="flex min-h-full flex-col overflow-hidden px-4 pt-5">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="mb-8"
-      >
-        <h1 className="text-[22px] font-semibold text-[#f5f0fa] tracking-[-0.01em]">
-          Привіт, {user?.name || 'Агенте'}
-        </h1>
-        <p className="text-[14px] text-[#a08fb0] mt-1">Що будемо робити сьогодні?</p>
-      </motion.div>
-
       <div className="space-y-3">
         {visibleCards.map((card, index) => {
           const Icon = card.icon;

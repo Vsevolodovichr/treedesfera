@@ -4,6 +4,7 @@ import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { Upload, Camera, Layers, RotateCcw, Check, X, GripVertical, Eraser } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
 import { uploadFloorPlan } from '../lib/api';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 interface PlacedHotspot {
   id: string;
@@ -227,12 +228,7 @@ export default function PlanSetupPage() {
 
   if (mode === 'select') {
     return (
-      <div className="flex min-h-full flex-col px-4 pt-5 pb-0">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">План приміщення</h2>
-          <p className="text-[14px] text-[#a08fb0] mb-6">Оберіть спосіб додавання плану</p>
-        </motion.div>
-
+      <div className="flex min-h-full flex-col px-4 pt-4 pb-0">
         <div className="grid grid-cols-2 gap-3">
           {[
             { id: 'upload', icon: Upload, title: 'Завантажити', desc: 'Вибрати зображення плану', primary: true },
@@ -298,7 +294,7 @@ export default function PlanSetupPage() {
           onChange={handleFileSelect}
         />
 
-        <div className="mt-auto p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+        <BottomActionBar className="mt-auto">
           <button
             onClick={() => {
               setFloorPlan(null);
@@ -308,7 +304,7 @@ export default function PlanSetupPage() {
           >
             Пропустити цей крок
           </button>
-        </div>
+        </BottomActionBar>
       </div>
     );
   }
@@ -344,7 +340,7 @@ export default function PlanSetupPage() {
           </div>
         </div>
 
-        <div className="p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+        <BottomActionBar className="mt-0">
           <div className="flex gap-3">
             <button
               onClick={() => setMode('select')}
@@ -361,7 +357,7 @@ export default function PlanSetupPage() {
               Готово
             </button>
           </div>
-        </div>
+        </BottomActionBar>
       </div>
     );
   }
@@ -479,7 +475,7 @@ export default function PlanSetupPage() {
         )}
       </AnimatePresence>
 
-      <div className="p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar className="mt-0">
         <div className="flex gap-3">
           <button
             onClick={() => {
@@ -504,7 +500,7 @@ export default function PlanSetupPage() {
           </button>
         </div>
         {uploadError && <p className="mt-2 text-center text-[12px] text-[#f87171]">{uploadError}</p>}
-      </div>
+      </BottomActionBar>
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, Reorder } from 'framer-motion';
-import { GripVertical, Trash2, Plus, Utensils, Sofa, Bed, Bath, DoorOpen, Trees, Shirt, Archive, Camera } from 'lucide-react';
+import { GripVertical, Trash2, Plus, Utensils, Sofa, Bed, Bath, DoorOpen, Trees, Shirt, Archive, Camera, Home } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
 import type { Room, RoomType } from '../store';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
   kitchen: <Utensils className="w-4 h-4" />,
@@ -11,6 +12,7 @@ const roomIcons: Record<RoomType, React.ReactNode> = {
   bedroom: <Bed className="w-4 h-4" />,
   bathroom: <Bath className="w-4 h-4" />,
   hallway: <DoorOpen className="w-4 h-4" />,
+  room: <Home className="w-4 h-4" />,
   balcony: <Trees className="w-4 h-4" />,
   wardrobe: <Shirt className="w-4 h-4" />,
   storage: <Archive className="w-4 h-4" />,
@@ -81,12 +83,7 @@ export default function RoomSetupPage() {
   };
 
   return (
-    <div className="min-h-dvh px-4 pt-5 pb-0">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">Кімнати</h2>
-        <p className="text-[14px] text-[#a08fb0] mb-6">Налаштуйте кімнати для зйомки</p>
-      </motion.div>
-
+    <div className="min-h-full px-4 pt-4 pb-0">
       <Reorder.Group axis="y" values={items} onReorder={setItems} className="space-y-2">
         {items.map((room, index) => (
           <Reorder.Item key={room.id} value={room}>
@@ -121,7 +118,7 @@ export default function RoomSetupPage() {
                   />
                 ) : (
                   <button onClick={() => startEdit(room)} className="text-left w-full">
-                    <p className="text-[14px] font-medium text-[#f5f0fa] truncate">{room.name}</p>
+                    <p className="text-[14px] font-medium leading-5 text-[#f5f0fa]">{room.name}</p>
                     <p className="text-[11px] text-[#a08fb0]">
                       {roomTypeLabels[room.type]}
                       {isPanoEnabled && room.panorama?.status === 'ready' && <span className="ml-2 text-[#d4af37]">📐 Пано</span>}
@@ -194,14 +191,14 @@ export default function RoomSetupPage() {
       </motion.div>
 
       {/* Bottom Button */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar>
         <button
           onClick={handleConfirm}
           className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all"
         >
           Підтвердити кімнати
         </button>
-      </div>
+      </BottomActionBar>
     </div>
   );
 }

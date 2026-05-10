@@ -71,39 +71,17 @@ export default function LoginPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-[#d100d9]/[0.03] blur-3xl" />
       
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-        className="relative z-10 flex flex-col items-center mb-8"
-      >
-        <img src="/logo-xatosfera.png" alt="Xatosfera" className="w-[100px] h-[100px] object-contain mb-4" />
-      </motion.div>
-
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="relative z-10 text-[28px] font-bold text-[#f5f0fa] tracking-[-0.02em] mb-2"
-      >
-        Xatosfera Capture
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="relative z-10 text-[14px] text-[#a08fb0] mb-10"
-      >
-        Створюйте інтерактивні тури за 15 хвилин
-      </motion.p>
-
-      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-        className={`relative z-10 w-full max-w-[360px] space-y-4 ${shake ? 'animate-shake' : ''}`}
+        transition={{ delay: 0.2 }}
+        className={`relative z-10 w-full max-w-[360px] rounded-[24px] border border-[rgba(232,78,250,0.12)] bg-[#14101a]/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl ${shake ? 'animate-shake' : ''}`}
       >
-        <div>
+        <div className="mb-6 flex flex-col items-center">
+          <img src="/logo-xatosfera.png" alt="Xatosfera" className="mb-4 h-[100px] w-[100px] object-contain" />
+          <h1 className="text-[28px] font-bold tracking-[-0.02em] text-[#f5f0fa]">3Dсфера</h1>
+        </div>
+
+        <div className="space-y-4">
           <input
             type="email"
             value={email}
@@ -112,40 +90,40 @@ export default function LoginPage() {
             className="w-full h-[56px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
             onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
-        </div>
 
-        <div className="relative">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Пароль"
-            className="w-full h-[56px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
-            onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Пароль"
+              className="w-full h-[56px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+            />
+            <button
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[#a08fb0]"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {error && (
+            <p className="text-[#f87171] text-[13px] px-1">{error}</p>
+          )}
+
           <button
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[#a08fb0]"
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
           >
-            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-[#0a070d] border-t-transparent rounded-full animate-spin" />
+            ) : (
+              'Увійти'
+            )}
           </button>
         </div>
-
-        {error && (
-          <p className="text-[#f87171] text-[13px] px-1">{error}</p>
-        )}
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
-        >
-          {loading ? (
-            <div className="w-5 h-5 border-2 border-[#0a070d] border-t-transparent rounded-full animate-spin" />
-          ) : (
-            'Увійти'
-          )}
-        </button>
       </motion.div>
 
     </div>

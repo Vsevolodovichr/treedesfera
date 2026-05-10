@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Check, Camera, RotateCcw } from 'lucide-react';
-import MobileHeader from '../components/MobileHeader';
 import PanoramaViewer from '../components/PanoramaViewer';
 import { useStore } from '../store';
 
@@ -39,8 +38,7 @@ export default function PanoReviewPage() {
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a070d] text-[#f5f5f5]">
-      <MobileHeader />
-      <main className="flex flex-1 flex-col px-4 pb-[max(18px,env(safe-area-inset-bottom))] pt-4">
+      <main className="flex flex-1 flex-col px-4 pb-[max(18px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))]">
         <div className="min-h-0 flex-1 overflow-hidden rounded-[16px] border border-white/10 bg-black">
           <PanoramaViewer
             panoramaUrl={panorama.equirectangularUrl}

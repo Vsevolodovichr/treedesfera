@@ -5,6 +5,7 @@ import { Copy, Check, Globe, Eye, ExternalLink, AlertCircle } from 'lucide-react
 import { useStore } from '../store';
 import { publishTour, uploadTourPanorama, uploadTourPhoto } from '../lib/api';
 import { getDepth } from '../lib/depth/storage';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 import QRCode from 'qrcode';
 
 const PUBLIC_TOUR_BASE_URL = (import.meta.env.VITE_PUBLIC_TOUR_BASE_URL || `${window.location.origin}/tour`).replace(/\/$/, '');
@@ -155,19 +156,13 @@ export default function PublishPage() {
   };
 
   return (
-    <div className="min-h-dvh px-4 pt-5 pb-0">
-      {/* Title */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f0fa]">Опублікувати тур</h2>
-        <p className="text-[14px] text-[#a08fb0] mt-1">{property?.address}</p>
-      </motion.div>
-
+    <div className="min-h-full px-4 pt-4 pb-0">
       {/* Status Toggle */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mt-6 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5"
+        className="bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -310,14 +305,14 @@ export default function PublishPage() {
       )}
 
       {/* Back to Start */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar>
         <button
           onClick={() => navigate('/start')}
           className="w-full h-[56px] bg-[#d100d9] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all"
         >
           На головну
         </button>
-      </div>
+      </BottomActionBar>
 
       {validationIssues.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/70 px-4 pb-4">

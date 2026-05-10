@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, Camera, Check, ChevronRight } from 'lucide-react';
 import { useStore, qualityMessages } from '../store';
 import { useDepthBatch } from '../hooks/useDepthBatch';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 export default function ReviewPage() {
   const navigate = useNavigate();
@@ -28,23 +29,13 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="min-h-dvh px-4 pt-5 pb-0">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f0fa]">
-          Перевірка зйомки
-        </h2>
-        <p className="text-[14px] text-[#a08fb0] mt-1">
-          {completedRooms.length} з {activeRooms.length} кімнат готові
-        </p>
-      </motion.div>
-
+    <div className="min-h-full px-4 pt-4 pb-0">
       {/* Overall Score */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
-        className="mt-6 flex flex-col items-center"
+        className="flex flex-col items-center"
       >
         <div className="relative w-24 h-24">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -236,7 +227,7 @@ export default function ReviewPage() {
       )}
 
       {/* Continue Button */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar>
         <button
           onClick={handleContinue}
           className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center gap-2"
@@ -244,7 +235,7 @@ export default function ReviewPage() {
           Продовжити
           <ChevronRight className="w-4 h-4" />
         </button>
-      </div>
+      </BottomActionBar>
     </div>
   );
 }

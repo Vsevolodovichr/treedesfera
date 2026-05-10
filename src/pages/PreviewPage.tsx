@@ -6,6 +6,7 @@ import { useStore } from '../store';
 import { getDepth } from '../lib/depth/storage';
 import { requestOrientationPermission } from '../lib/depth/orientation';
 import PanoramaViewer from '../components/PanoramaViewer';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 const DepthViewer = lazy(() => import('../components/DepthViewer'));
 
@@ -73,7 +74,7 @@ export default function PreviewPage() {
   };
 
   return (
-    <div className="min-h-dvh pb-0">
+    <div className="min-h-full pb-0">
       {/* Property Hero */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -197,7 +198,7 @@ export default function PreviewPage() {
       </div>
 
       {/* Bottom Buttons */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar>
         <div className="flex gap-3">
           <button
             onClick={() => navigate('/camera')}
@@ -212,7 +213,7 @@ export default function PreviewPage() {
             Опублікувати тур
           </button>
         </div>
-      </div>
+      </BottomActionBar>
 
       {/* Photo Lightbox */}
       <AnimatePresence>

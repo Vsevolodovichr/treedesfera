@@ -35,7 +35,7 @@ export type Panorama = {
   createdAt: number;
 };
 
-export type RoomType = 'kitchen' | 'living' | 'bedroom' | 'bathroom' | 'hallway' | 'balcony' | 'wardrobe' | 'storage' | 'office' | 'garden' | 'garage' | 'terrace' | 'basement' | 'other';
+export type RoomType = 'kitchen' | 'living' | 'bedroom' | 'bathroom' | 'hallway' | 'room' | 'balcony' | 'wardrobe' | 'storage' | 'office' | 'garden' | 'garage' | 'terrace' | 'basement' | 'other';
 
 export interface Room {
   id: string;
@@ -149,12 +149,45 @@ export interface AppState {
 }
 
 const defaultRooms: Room[] = [
-  { id: '1', name: 'Кухня', type: 'kitchen', order: 0, active: true, status: 'pending', photos: [], qualityScore: 0 },
-  { id: '2', name: 'Вітальня', type: 'living', order: 1, active: true, status: 'pending', photos: [], qualityScore: 0 },
-  { id: '3', name: 'Спальня', type: 'bedroom', order: 2, active: true, status: 'pending', photos: [], qualityScore: 0 },
-  { id: '4', name: 'Ванна кімната', type: 'bathroom', order: 3, active: true, status: 'pending', photos: [], qualityScore: 0 },
-  { id: '5', name: 'Коридор', type: 'hallway', order: 4, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '1', name: 'Коридор', type: 'hallway', order: 0, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '2', name: 'Ванна кімната / санвузол', type: 'bathroom', order: 1, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '3', name: 'Кухня', type: 'kitchen', order: 2, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '4', name: 'Кімната', type: 'room', order: 3, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '5', name: 'Спальня', type: 'bedroom', order: 4, active: true, status: 'pending', photos: [], qualityScore: 0 },
+  { id: '6', name: 'Вітальня', type: 'living', order: 5, active: true, status: 'pending', photos: [], qualityScore: 0 },
 ];
+
+const legacyDefaultRooms = [
+  { id: '1', name: 'Кухня', type: 'kitchen' },
+  { id: '2', name: 'Вітальня', type: 'living' },
+  { id: '3', name: 'Спальня', type: 'bedroom' },
+  { id: '4', name: 'Ванна кімната', type: 'bathroom' },
+  { id: '5', name: 'Коридор', type: 'hallway' },
+];
+
+function normalizeDefaultRooms(rooms: unknown) {
+  if (!Array.isArray(rooms)) return defaultRooms;
+  const isLegacyDefault = rooms.length === legacyDefaultRooms.length && rooms.every((room, index) => {
+    const current = room as Partial<Room>;
+    const legacy = legacyDefaultRooms[index];
+    return (
+      current.id === legacy.id &&
+      current.name === legacy.name &&
+      current.type === legacy.type &&
+      current.order === index &&
+      current.active === true &&
+      current.status === 'pending' &&
+      Array.isArray(current.photos) &&
+      current.photos.length === 0 &&
+      current.qualityScore === 0 &&
+      current.floorPlanX === undefined &&
+      current.floorPlanY === undefined &&
+      current.panorama === undefined
+    );
+  });
+
+  return isLegacyDefault ? defaultRooms : rooms as Room[];
+}
 
 const initialState = {
   isAuthenticated: false,
@@ -200,7 +233,7 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   setProperty: (property) => set({ property }),
   setDraftProperty: (draftProperty) => set({ draftProperty }),
   setFloorPlan: (floorPlan) => set({ floorPlan }),
-  setRooms: (rooms) => set({ rooms }),
+  setRooms: (rooms) => set({ rooms: rooms.map((room, order) => ({ ...room, order })) }),
   updateRoom: (id, updates) => set((state) => ({
     rooms: state.rooms.map((r) => r.id === id ? { ...r, ...updates } : r)
   })),
@@ -306,6 +339,17 @@ export const useStore = create<AppState>()(persist((set, get) => ({
 }), {
   name: 'xatosfera-capture-state',
   storage: createJSONStorage(() => indexedDbStorage),
+  version: 1,
+  migrate: (persistedState) => {
+    if (!persistedState || typeof persistedState !== 'object') return persistedState;
+    const state = persistedState as Partial<AppState>;
+    return { ...state, rooms: normalizeDefaultRooms(state.rooms) };
+  },
+  merge: (persistedState, currentState) => {
+    if (!persistedState || typeof persistedState !== 'object') return currentState;
+    const state = { ...currentState, ...(persistedState as Partial<AppState>) };
+    return { ...state, rooms: normalizeDefaultRooms(state.rooms) };
+  },
 }));
 
 export const roomIcons: Record<RoomType, string> = {
@@ -314,6 +358,7 @@ export const roomIcons: Record<RoomType, string> = {
   bedroom: 'bed',
   bathroom: 'bath',
   hallway: 'door-open',
+  room: 'home',
   balcony: 'trees',
   wardrobe: 'shirt',
   storage: 'archive',
@@ -331,6 +376,7 @@ export const roomTypeLabels: Record<RoomType, string> = {
   bedroom: 'Спальня',
   bathroom: 'Ванна',
   hallway: 'Коридор',
+  room: 'Кімната',
   balcony: 'Балкон',
   wardrobe: 'Гардероб',
   storage: 'Комора',

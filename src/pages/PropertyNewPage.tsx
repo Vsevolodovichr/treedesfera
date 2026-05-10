@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
 import { useStore } from '../store';
 import { createProperty, getUsers, toCaptureProperty } from '../lib/api';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 type PropertyType = 'apartment' | 'house' | 'commercial';
 type DealType = 'sale' | 'rent';
@@ -78,15 +79,7 @@ export default function PropertyNewPage() {
     }`;
 
   return (
-    <div className="min-h-dvh px-4 pt-5 pb-0">
-      <motion.h2
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-[22px] font-semibold text-[#f5f0fa] mb-6"
-      >
-        Новий об'єкт
-      </motion.h2>
-
+    <div className="min-h-full px-4 pt-4 pb-0">
       <div className="space-y-5">
         {/* Type Selector */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
@@ -242,7 +235,7 @@ export default function PropertyNewPage() {
       </div>
 
       {/* Sticky Button */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))]">
+      <BottomActionBar>
         {errors.api && <p className="text-[#f87171] text-[12px] mb-2 text-center">{errors.api}</p>}
         <button
           onClick={handleNext}
@@ -251,7 +244,7 @@ export default function PropertyNewPage() {
         >
           {createPropertyMutation.isPending ? 'Створення...' : 'Далі'}
         </button>
-      </div>
+      </BottomActionBar>
     </div>
   );
 }

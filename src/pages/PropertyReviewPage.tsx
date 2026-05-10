@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, AlertTriangle, AlertCircle, ChevronRight } from 'lucide-react';
 import { useStore } from '../store';
+import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 export default function PropertyReviewPage() {
   const navigate = useNavigate();
-  const { rooms, property } = useStore();
+  const { rooms } = useStore();
   const activeRooms = rooms.filter((r) => r.active);
   const completedRooms = activeRooms.filter((r) => r.status === 'completed');
   
@@ -17,19 +18,13 @@ export default function PropertyReviewPage() {
   const missingCount = activeRooms.filter((r) => r.status !== 'completed').length;
 
   return (
-    <div className="min-h-dvh px-4 pt-5 pb-0">
-      {/* Title */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-[22px] font-semibold text-[#f5f0fa] mb-1">Огляд об'єкта</h2>
-        <p className="text-[14px] text-[#a08fb0]">{property?.address || 'Адреса не вказана'}</p>
-      </motion.div>
-
+    <div className="min-h-full px-4 pt-4 pb-0">
       {/* Overall Score Card */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mt-6 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-6"
+        className="bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[16px] p-6"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -159,7 +154,7 @@ export default function PropertyReviewPage() {
       )}
 
       {/* Bottom Buttons */}
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-[#0a070d] via-[#0a070d]/90 to-transparent pb-[max(16px,env(safe-area-inset-bottom))] space-y-3">
+      <BottomActionBar className="space-y-3">
         <button
           onClick={() => navigate('/preview')}
           className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center gap-2"
@@ -175,7 +170,7 @@ export default function PropertyReviewPage() {
             Повернутися до зйомки
           </button>
         )}
-      </div>
+      </BottomActionBar>
     </div>
   );
 }
