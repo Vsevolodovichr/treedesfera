@@ -29,3 +29,9 @@ Structure:
   tailwind.config.js   Configures Tailwind's theme, plugins, etc.
   vite.config.ts       Main build and dev server settings for Vite
   postcss.config.js    Config file for CSS post-processing tools
+
+Panorama (Level 2):
+  Capture a panorama for rooms where a 360 degree overview helps buyers understand layout and volume.
+  Set VITE_PANO_ENABLED=false to hide panorama capture, review, preview, publish, and public-tour panorama UI.
+  The client stitcher uses a lightweight cylindrical projection with known yaw spacing, so quality depends on steady rotation and overlap.
+  It is designed for guided 6-8 frame interior captures, not feature-matched OpenCV stitching.

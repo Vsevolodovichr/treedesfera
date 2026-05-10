@@ -16,6 +16,25 @@ export type DepthRunTelemetry = {
   modelLoadMs: number;
 };
 
+export type PanoStitchTelemetry = {
+  durationMs: number;
+  framesCount: number;
+  outputBytes: number;
+  success: boolean;
+};
+
+export type Panorama = {
+  id: string;
+  roomId: string;
+  captureMethod: 'manual' | 'guided';
+  frameUrls: string[];
+  equirectangularUrl?: string;
+  status: 'none' | 'capturing' | 'stitching' | 'ready' | 'failed';
+  hfov?: number;
+  yawOffset?: number;
+  createdAt: number;
+};
+
 export type RoomType = 'kitchen' | 'living' | 'bedroom' | 'bathroom' | 'hallway' | 'balcony' | 'wardrobe' | 'storage' | 'office' | 'garden' | 'garage' | 'terrace' | 'basement' | 'other';
 
 export interface Room {
@@ -29,6 +48,7 @@ export interface Room {
   qualityScore: number;
   floorPlanX?: number;
   floorPlanY?: number;
+  panorama?: Panorama;
 }
 
 export interface Photo {
@@ -99,12 +119,14 @@ export interface AppState {
   // Depth
   deviceCaps: DeviceCaps | null;
   lastDepthRun: DepthRunTelemetry | null;
+  lastPanoStitch: PanoStitchTelemetry | null;
   
   // Actions
   setAuthenticated: (val: boolean) => void;
   setUser: (user: AppState['user']) => void;
   setDeviceCaps: (caps: DeviceCaps) => void;
   setLastDepthRun: (run: DepthRunTelemetry) => void;
+  setLastPanoStitch: (run: PanoStitchTelemetry) => void;
   setScreen: (screen: string) => void;
   goBack: () => void;
   setProperty: (property: Property) => void;
@@ -115,6 +137,11 @@ export interface AppState {
   setCurrentRoomIndex: (index: number) => void;
   addPhotoToRoom: (roomId: string, photo: Photo) => void;
   setPhotoDepth: (roomId: string, photoId: string, update: { depthUrl?: string; depthStatus: Photo['depthStatus'] }) => void;
+  startPanoramaCapture: (roomId: string) => void;
+  addPanoramaFrame: (roomId: string, url: string) => void;
+  setPanoramaStatus: (roomId: string, status: Panorama['status']) => void;
+  setPanoramaResult: (roomId: string, url: string, hfov: number) => void;
+  resetPanorama: (roomId: string) => void;
   setCurrentShotIndex: (index: number) => void;
   setTourSlug: (slug: string | null) => void;
   setPublished: (val: boolean) => void;
@@ -144,6 +171,7 @@ const initialState = {
   isPublished: false,
   deviceCaps: null,
   lastDepthRun: null,
+  lastPanoStitch: null,
 };
 
 const appStateStore = createStore('xatosfera-capture-state', 'app-state');
@@ -161,6 +189,7 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   setUser: (user) => set({ user }),
   setDeviceCaps: (deviceCaps) => set({ deviceCaps }),
   setLastDepthRun: (lastDepthRun) => set({ lastDepthRun }),
+  setLastPanoStitch: (lastPanoStitch) => set({ lastPanoStitch }),
   setScreen: (screen) => set({ previousScreen: get().currentScreen, currentScreen: screen }),
   goBack: () => {
     const { previousScreen } = get();
@@ -192,6 +221,80 @@ export const useStore = create<AppState>()(persist((set, get) => ({
           }
         : room
     ),
+  })),
+  startPanoramaCapture: (roomId) => set((state) => ({
+    rooms: state.rooms.map((room) =>
+      room.id === roomId
+        ? {
+            ...room,
+            panorama: {
+              id: `${roomId}-${Date.now()}`,
+              roomId,
+              captureMethod: 'guided',
+              frameUrls: [],
+              status: 'capturing',
+              hfov: 360,
+              createdAt: Date.now(),
+            },
+          }
+        : room
+    ),
+  })),
+  addPanoramaFrame: (roomId, url) => set((state) => ({
+    rooms: state.rooms.map((room) =>
+      room.id === roomId
+        ? {
+            ...room,
+            panorama: room.panorama
+              ? {
+                  ...room.panorama,
+                  frameUrls: [...room.panorama.frameUrls, url],
+                }
+              : {
+                  id: `${roomId}-${Date.now()}`,
+                  roomId,
+                  captureMethod: 'manual',
+                  frameUrls: [url],
+                  status: 'capturing',
+                  hfov: 360,
+                  createdAt: Date.now(),
+                },
+          }
+        : room
+    ),
+  })),
+  setPanoramaStatus: (roomId, status) => set((state) => ({
+    rooms: state.rooms.map((room) =>
+      room.id === roomId && room.panorama
+        ? { ...room, panorama: { ...room.panorama, status } }
+        : room
+    ),
+  })),
+  setPanoramaResult: (roomId, url, hfov) => set((state) => ({
+    rooms: state.rooms.map((room) =>
+      room.id === roomId && room.panorama
+        ? {
+            ...room,
+            panorama: {
+              ...room.panorama,
+              equirectangularUrl: url,
+              hfov,
+              status: 'ready',
+            },
+          }
+        : room
+    ),
+  })),
+  resetPanorama: (roomId) => set((state) => ({
+    rooms: state.rooms.map((room) => {
+      if (room.id !== roomId || !room.panorama) {
+        return room;
+      }
+
+      const { panorama, ...rest } = room;
+      void panorama;
+      return rest;
+    }),
   })),
   setCurrentShotIndex: (index) => set({ currentShotIndex: index }),
   setTourSlug: (slug) => set({ tourSlug: slug }),

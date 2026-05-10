@@ -6,10 +6,12 @@ import { ChevronLeft, X, Phone, Mail, ChevronRight, Home, Ruler, BedDouble } fro
 import { postPublicTourView } from '../lib/api';
 import { hasOrientationPermission, requestOrientationPermission } from '../lib/depth/orientation';
 import type { VirtualTour } from '../types/api';
+import PanoramaViewer from '../components/PanoramaViewer';
 
 const DepthViewer = lazy(() => import('../components/DepthViewer'));
 const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const DEPTH_ENABLED = import.meta.env.VITE_DEPTH_ENABLED !== 'false';
+const PANO_ENABLED = import.meta.env.VITE_PANO_ENABLED === 'true';
 
 interface PublicPhoto {
   id: string;
@@ -24,6 +26,9 @@ interface PublicRoom {
   photos: PublicPhoto[];
   area?: number;
   hasPanorama: boolean;
+  panoramaUrl?: string;
+  hfov?: number;
+  yawOffset?: number;
 }
 
 interface PublicTourData {
@@ -117,15 +122,19 @@ function normalizePublicTour(tour: VirtualTour): PublicTourData {
   const rooms = rawRooms.map((value, index) => {
     const room = asRecord(value);
     const photos = collectPhotos(room);
+    const panoramaUrl = stringValue(room, ['panoramaUrl', 'panorama_url', 'panorama']);
     return {
       id: stringValue(room, ['id', 'room_id'], `${index + 1}`),
       name: stringValue(room, ['name', 'label'], `Кімната ${index + 1}`),
       type: stringValue(room, ['type'], 'room'),
       photos,
       area: numberValue(room, ['area'], 0) || undefined,
-      hasPanorama: booleanValue(room, ['has_panorama', 'panorama']) || stringValue(room, ['photo_type']) === 'panorama',
+      hasPanorama: Boolean(panoramaUrl) || booleanValue(room, ['has_panorama']) || stringValue(room, ['photo_type']) === 'panorama',
+      panoramaUrl: panoramaUrl || undefined,
+      hfov: numberValue(room, ['hfov'], 0) || undefined,
+      yawOffset: numberValue(room, ['yawOffset', 'yaw_offset'], 0) || undefined,
     };
-  }).filter((room) => room.photos.length > 0);
+  }).filter((room) => room.photos.length > 0 || (PANO_ENABLED && room.panoramaUrl));
 
   const hotspots = (Array.isArray(tour.hotspots) ? tour.hotspots : []).map((value) => {
     const hotspot = asRecord(value);
@@ -180,6 +189,7 @@ export default function PublicTourPage() {
   const [showDepthTooltip, setShowDepthTooltip] = useState(false);
   const [orientationEnabled, setOrientationEnabled] = useState(() => hasOrientationPermission());
   const analyticsRef = useRef<{ roomId: string | null; startedAt: number }>({ roomId: null, startedAt: 0 });
+  const roomSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const tourQuery = useQuery({
     queryKey: ['public-tour', tourSlug],
@@ -225,6 +235,9 @@ export default function PublicTourPage() {
 
   const allPhotos = useMemo(() => tourData?.rooms.flatMap((room) => room.photos) ?? [], [tourData]);
   const selectedRoom = tourData?.rooms.find((room) => room.id === activeSelectedRoomId);
+  const hasAnyPanorama = PANO_ENABLED && Boolean(tourData?.rooms.some((room) => room.panoramaUrl));
+  const coverUrl = allPhotos[0]?.url || (PANO_ENABLED ? tourData?.rooms.find((room) => room.panoramaUrl)?.panoramaUrl : null) || '/room-living.jpg';
+  const firstPanoramaRoomId = PANO_ENABLED ? tourData?.rooms.find((room) => room.panoramaUrl)?.id || null : null;
 
   const selectLightboxPhoto = (photo: PublicPhoto | null, index: number) => {
     setShowPhoto(photo);
@@ -259,10 +272,21 @@ export default function PublicTourPage() {
   };
 
   const openSelectedRoom = () => {
+    if (PANO_ENABLED && selectedRoom?.panoramaUrl) {
+      roomSectionRefs.current[selectedRoom.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (!selectedRoom?.photos[0]) return;
     const idx = allPhotos.findIndex((item) => item.url === selectedRoom.photos[0].url);
     setLightboxIdx(idx >= 0 ? idx : 0);
     selectLightboxPhoto(selectedRoom.photos[0], idx >= 0 ? idx : 0);
+  };
+
+  const selectRoomHotspot = (roomId: string) => {
+    setSelectedRoomId(roomId);
+    requestAnimationFrame(() => {
+      roomSectionRefs.current[roomId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   useEffect(() => {
@@ -281,7 +305,7 @@ export default function PublicTourPage() {
     );
   }
 
-  if (tourQuery.isError || !tourData || allPhotos.length === 0) {
+  if (tourQuery.isError || !tourData || (allPhotos.length === 0 && !hasAnyPanorama)) {
     return (
       <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] flex items-center justify-center px-6 text-center">
         <p className="text-[14px] text-[#a08fb0]">Тур недоступний або ще не опублікований</p>
@@ -293,7 +317,7 @@ export default function PublicTourPage() {
     <div className="min-h-screen bg-[#0a070d] text-[#f5f0fa] font-sans">
       <div className="relative h-[280px] overflow-hidden">
         <img
-          src={allPhotos[0].url}
+          src={coverUrl}
           alt="Property"
           className="w-full h-full object-cover"
         />
@@ -355,7 +379,7 @@ export default function PublicTourPage() {
               return (
                 <button
                   key={hotspot.roomId}
-                  onClick={() => setSelectedRoomId(hotspot.roomId)}
+                  onClick={() => selectRoomHotspot(hotspot.roomId)}
                   className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
                   style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
                 >
@@ -405,6 +429,9 @@ export default function PublicTourPage() {
         {tourData.rooms.map((room, index) => (
           <motion.div
             key={room.id}
+            ref={(element) => {
+              roomSectionRefs.current[room.id] = element;
+            }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + index * 0.05 }}
@@ -414,23 +441,41 @@ export default function PublicTourPage() {
               <h3 className="text-[14px] font-medium text-[#f5f0fa]">{room.name}</h3>
               {room.area ? <span className="text-[12px] text-[#a08fb0]">{room.area} м²</span> : null}
             </div>
-            <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
-              {room.photos.map((photo, photoIndex) => (
-                <button
-                  key={`${room.id}-${photoIndex}`}
-                  onClick={() => openPhoto(photo)}
-                  className="snap-start flex-shrink-0 w-full max-w-[300px] h-[180px] rounded-[12px] overflow-hidden border border-[rgba(232,78,250,0.10)] active:scale-[0.98] transition-transform"
-                >
-                  {DEPTH_ENABLED && photo.depthUrl ? (
-                    <Suspense fallback={<img src={photo.url} alt={room.name} className="w-full h-full object-cover" />}>
-                      <DepthViewer photoUrl={photo.url} depthUrl={photo.depthUrl} className="h-full w-full" />
-                    </Suspense>
-                  ) : (
-                    <img src={photo.url} alt={room.name} className="w-full h-full object-cover" />
-                  )}
-                </button>
-              ))}
-            </div>
+            {PANO_ENABLED && room.panoramaUrl ? (
+              <div className="mb-3">
+                {room.id === firstPanoramaRoomId && shouldRequestOrientationPermission() && !orientationEnabled ? (
+                  <button
+                    type="button"
+                    onClick={enable3d}
+                    className="mb-2 h-10 rounded-[10px] bg-[#d4af37] px-4 text-[13px] font-semibold text-[#0a070d]"
+                  >
+                    Увімкнути 3D-огляд
+                  </button>
+                ) : null}
+                <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-[12px] border border-[rgba(232,78,250,0.10)] bg-black">
+                  <PanoramaViewer panoramaUrl={room.panoramaUrl} hfov={room.hfov} className="h-full" />
+                </div>
+              </div>
+            ) : null}
+            {room.photos.length > 0 ? (
+              <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
+                {room.photos.map((photo, photoIndex) => (
+                  <button
+                    key={`${room.id}-${photoIndex}`}
+                    onClick={() => openPhoto(photo)}
+                    className="snap-start flex-shrink-0 w-full max-w-[300px] h-[180px] rounded-[12px] overflow-hidden border border-[rgba(232,78,250,0.10)] active:scale-[0.98] transition-transform"
+                  >
+                    {DEPTH_ENABLED && photo.depthUrl ? (
+                      <Suspense fallback={<img src={photo.url} alt={room.name} className="w-full h-full object-cover" />}>
+                        <DepthViewer photoUrl={photo.url} depthUrl={photo.depthUrl} className="h-full w-full" />
+                      </Suspense>
+                    ) : (
+                      <img src={photo.url} alt={room.name} className="w-full h-full object-cover" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </motion.div>
         ))}
       </div>

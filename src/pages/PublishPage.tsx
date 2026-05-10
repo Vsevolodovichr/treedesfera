@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Copy, Check, Globe, Eye, ExternalLink, AlertCircle } from 'lucide-react';
 import { useStore } from '../store';
-import { publishTour, uploadTourPhoto } from '../lib/api';
+import { publishTour, uploadTourPanorama, uploadTourPhoto } from '../lib/api';
 import { getDepth } from '../lib/depth/storage';
 import QRCode from 'qrcode';
 
 const PUBLIC_TOUR_BASE_URL = (import.meta.env.VITE_PUBLIC_TOUR_BASE_URL || `${window.location.origin}/tour`).replace(/\/$/, '');
 const DEPTH_ENABLED = import.meta.env.VITE_DEPTH_ENABLED !== 'false';
+const PANO_ENABLED = import.meta.env.VITE_PANO_ENABLED === 'true';
 
 interface PublishIssue {
   message: string;
@@ -95,6 +96,16 @@ export default function PublishPage() {
               depth?.blob,
             );
             if (depth) URL.revokeObjectURL(depth.url);
+          }
+          if (PANO_ENABLED && room.panorama?.status === 'ready' && room.panorama.equirectangularUrl) {
+            const response = await fetch(room.panorama.equirectangularUrl);
+            if (!response.ok) throw new Error('panorama_fetch_failed');
+            const panoramaBlob = await response.blob();
+            const panoramaFile = new File([panoramaBlob], 'panorama.jpg', { type: 'image/jpeg' });
+            await uploadTourPanorama(property.id, room.id, panoramaFile, {
+              hfov: room.panorama.hfov ?? 360,
+              yawOffset: room.panorama.yawOffset,
+            });
           }
         }
         const tour = await publishTour(property.id, true);

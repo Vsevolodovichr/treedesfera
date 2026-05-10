@@ -16,7 +16,9 @@ export default function MobileHeader() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const title = screenTitles[location.pathname] || '3Dсфера';
+  const title = location.pathname.startsWith('/pano/') && location.pathname.endsWith('/review')
+    ? 'Перегляд панорами'
+    : screenTitles[location.pathname] || '3Dсфера';
   const showBack = location.pathname !== '/start' && location.pathname !== '/';
 
   return (

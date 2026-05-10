@@ -62,6 +62,14 @@ export interface ApiUser {
 
 export type TourStatus = 'draft' | 'published';
 
+export interface VirtualTourRoom {
+  id: string;
+  photos?: unknown[];
+  panoramaUrl?: string | null;
+  hfov?: number | null;
+  yawOffset?: number | null;
+}
+
 export interface VirtualTour {
   id: string;
   agency_id: string;
@@ -69,7 +77,7 @@ export interface VirtualTour {
   slug: string;
   floor_plan_key?: string | null;
   hotspots: unknown[];
-  rooms: unknown[];
+  rooms: VirtualTourRoom[];
   status: TourStatus;
   manager_user_id: string;
   published_at?: string | null;

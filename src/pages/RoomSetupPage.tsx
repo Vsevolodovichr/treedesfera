@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, Reorder } from 'framer-motion';
-import { GripVertical, Trash2, Plus, Utensils, Sofa, Bed, Bath, DoorOpen, Trees, Shirt, Archive } from 'lucide-react';
+import { GripVertical, Trash2, Plus, Utensils, Sofa, Bed, Bath, DoorOpen, Trees, Shirt, Archive, Camera } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
 import type { Room, RoomType } from '../store';
 
@@ -29,6 +29,7 @@ export default function RoomSetupPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  const isPanoEnabled = import.meta.env.VITE_PANO_ENABLED === 'true';
   const [newRoomName, setNewRoomName] = useState('');
 
   const toggleActive = (id: string) => {
@@ -74,6 +75,11 @@ export default function RoomSetupPage() {
     navigate('/camera');
   };
 
+  const handleStartPanorama = (roomId: string) => {
+    setRooms(items);
+    navigate(`/pano/${roomId}`);
+  };
+
   return (
     <div className="min-h-dvh px-4 pt-5 pb-0">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -116,7 +122,20 @@ export default function RoomSetupPage() {
                 ) : (
                   <button onClick={() => startEdit(room)} className="text-left w-full">
                     <p className="text-[14px] font-medium text-[#f5f0fa] truncate">{room.name}</p>
-                    <p className="text-[11px] text-[#a08fb0]">{roomTypeLabels[room.type]}</p>
+                    <p className="text-[11px] text-[#a08fb0]">
+                      {roomTypeLabels[room.type]}
+                      {isPanoEnabled && room.panorama?.status === 'ready' && <span className="ml-2 text-[#d4af37]">📐 Пано</span>}
+                    </p>
+                  </button>
+                )}
+                {isPanoEnabled && (
+                  <button
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => handleStartPanorama(room.id)}
+                    className="mt-2 inline-flex h-7 items-center gap-1.5 rounded-full border border-[#d4af37]/40 px-2.5 text-[11px] font-medium text-[#d4af37]"
+                  >
+                    <Camera className="w-3 h-3" />
+                    Зняти панораму
                   </button>
                 )}
               </div>

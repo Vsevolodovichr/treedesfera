@@ -9,6 +9,9 @@ import PropertySelectPage from './pages/PropertySelectPage';
 import PlanSetupPage from './pages/PlanSetupPage';
 import RoomSetupPage from './pages/RoomSetupPage';
 import CameraPage from './pages/CameraPage';
+import PanoCapturePage from './pages/PanoCapturePage';
+import PanoStitchPage from './pages/PanoStitchPage';
+import PanoReviewPage from './pages/PanoReviewPage';
 import ReviewPage from './pages/ReviewPage';
 import PropertyReviewPage from './pages/PropertyReviewPage';
 import PreviewPage from './pages/PreviewPage';
@@ -17,6 +20,7 @@ import PublicTourPage from './pages/PublicTourPage';
 import { BackgroundLayer } from './components/layout/BackgroundLayer';
 
 const DevDepthPage = import.meta.env.DEV ? lazy(() => import('./pages/DevDepthPage')) : null;
+const DevPanoPage = import.meta.env.DEV ? lazy(() => import('./pages/DevPanoPage')) : null;
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useStore((s) => s.isAuthenticated);
@@ -115,6 +119,44 @@ export default function App() {
           element={
             <ProtectedRoute>
               <CameraPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dev/pano"
+          element={
+            <ProtectedRoute>
+              {import.meta.env.DEV && DevPanoPage ? (
+                <Suspense fallback={null}>
+                  <DevPanoPage />
+                </Suspense>
+              ) : (
+                <Navigate to="/start" replace />
+              )}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pano/:roomId"
+          element={
+            <ProtectedRoute>
+              <PanoCapturePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pano/:roomId/stitch"
+          element={
+            <ProtectedRoute>
+              <PanoStitchPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pano/:roomId/review"
+          element={
+            <ProtectedRoute>
+              <PanoReviewPage />
             </ProtectedRoute>
           }
         />

@@ -5,6 +5,7 @@ import { MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStore } from '../store';
 import { getDepth } from '../lib/depth/storage';
 import { requestOrientationPermission } from '../lib/depth/orientation';
+import PanoramaViewer from '../components/PanoramaViewer';
 
 const DepthViewer = lazy(() => import('../components/DepthViewer'));
 
@@ -17,6 +18,7 @@ export default function PreviewPage() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxDepth, setLightboxDepth] = useState<{ photoId: string; url: string } | null>(null);
   const [orientationEnabled, setOrientationEnabled] = useState(false);
+  const isPanoEnabled = import.meta.env.VITE_PANO_ENABLED === 'true';
 
   const allPhotos = activeRooms.flatMap((r) => r.photos);
   const activePhoto = allPhotos[lightboxIndex] || null;
@@ -162,6 +164,16 @@ export default function PreviewPage() {
               <p className="text-[14px] font-medium text-[#f5f0fa]">{room.name}</p>
               <span className="text-[12px] text-[#a08fb0]">{room.photos.length} фото</span>
             </div>
+
+            {isPanoEnabled && room.panorama?.status === 'ready' && room.panorama.equirectangularUrl && (
+              <div className="mb-3 h-[260px] overflow-hidden rounded-[12px] border border-[rgba(232,78,250,0.10)] bg-black">
+                <PanoramaViewer
+                  panoramaUrl={room.panorama.equirectangularUrl}
+                  hfov={room.panorama.hfov}
+                  className="h-full"
+                />
+              </div>
+            )}
             
             {room.photos.length > 0 ? (
               <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">

@@ -15,6 +15,7 @@ export default function ReviewPage() {
   const readyDepthPhotos = depthPhotos.filter((photo) => photo.depthStatus === 'ready').length;
   const withoutDepthPhotos = depthPhotos.filter((photo) => photo.depthStatus === 'failed' || photo.depthStatus === 'skipped').length;
   const showDepthBlock = import.meta.env.VITE_DEPTH_ENABLED !== 'false' && deviceCaps?.recommendation !== 'off';
+  const isPanoEnabled = import.meta.env.VITE_PANO_ENABLED === 'true';
   
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
@@ -101,6 +102,24 @@ export default function ReviewPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {isPanoEnabled && (
+                    room.panorama?.status === 'ready' ? (
+                      <span className="rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 px-2 py-1 text-[11px] font-semibold text-[#d4af37]">
+                        📐 360°
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate(`/pano/${room.id}`);
+                        }}
+                        className="rounded-full border border-[#d4af37]/40 px-2 py-1 text-[11px] font-semibold text-[#d4af37]"
+                      >
+                        + Зняти панораму
+                      </button>
+                    )
+                  )}
                   {room.status === 'completed' && (
                     <span className="w-6 h-6 rounded-full bg-[#4ade80]/15 flex items-center justify-center">
                       <Check className="w-3.5 h-3.5 text-[#4ade80]" />

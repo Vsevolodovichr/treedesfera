@@ -131,6 +131,25 @@ export function uploadTourPhoto(
   });
 }
 
+export function uploadTourPanorama(
+  propertyId: string,
+  roomId: string,
+  file: File,
+  meta: { hfov: number; yawOffset?: number },
+) {
+  const formData = new FormData();
+  formData.set('panorama', file);
+  formData.set('hfov', String(meta.hfov));
+  if (meta.yawOffset !== undefined) formData.set('yawOffset', String(meta.yawOffset));
+  return apiFetch<VirtualTour>(
+    `/api/properties/${encodeURIComponent(propertyId)}/tour/rooms/${encodeURIComponent(roomId)}/panorama`,
+    {
+      method: 'POST',
+      body: formData,
+    },
+  );
+}
+
 export function publishTour(propertyId: string, published: boolean) {
   return apiFetch<VirtualTour>(`/api/properties/${encodeURIComponent(propertyId)}/tour/publish`, {
     method: 'PUT',

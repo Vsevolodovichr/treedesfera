@@ -88,21 +88,22 @@
 
 @layer base {
   /* ─── iOS Focus States ─── */
-*:focus-visible {
+*
+:focus-visible {
   outline: none;
 }
 
     
     body {
     @apply bg-background text-foreground font-sans antialiased;
-font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-weight: 400;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 600;
     /* iOS-style smooth scrolling */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     
     
-        background-image:
+    background-image:
       radial-gradient(ellipse 80% 50% at 50% -10%, rgba(209, 0, 217, 0.10), transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 100%, rgba(106, 0, 110, 0.12), transparent 60%);
     background-attachment: fixed;
