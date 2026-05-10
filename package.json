@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "remotion:studio": "remotion studio src/remotion/index.ts",
+    "remotion:render": "remotion render src/remotion/index.ts treedesfera-3d out/treedesfera-3d.mp4",
+    "remotion:still": "remotion still src/remotion/index.ts treedesfera-3d out/treedesfera-3d.png --frame=90"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -38,6 +41,7 @@
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@remotion/cli": "^4.0.459",
     "@tanstack/react-query": "^5.100.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -57,6 +61,7 @@
     "react-router": "^7.6.1",
     "react-router-dom": "^7.15.0",
     "recharts": "^2.15.4",
+    "remotion": "^4.0.459",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "three": "^0.184.0",

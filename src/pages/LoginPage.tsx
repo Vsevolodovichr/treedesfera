@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { login, refreshSession, toStoreUser } from '../lib/api';
 import { probeDepthSupport } from '../lib/depth/capabilities';
+import './LoginPage.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -63,23 +64,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0a070d] flex flex-col items-center justify-center px-6 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       {/* Subtle radial gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0f0f0f_0%,_#0a070d_70%)]" />
+      <div className="absolute inset-0 " />
       
       {/* Decorative gold accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-[#d100d9]/[0.03] blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full " />
       
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      <div
+
         className={`relative z-10 w-full max-w-[360px] rounded-[24px] border border-[rgba(232,78,250,0.12)] bg-[#14101a]/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl ${shake ? 'animate-shake' : ''}`}
       >
-        <div className="mb-6 flex flex-col items-center">
-          <img src="/logo-xatosfera.png" alt="Xatosfera" className="mb-4 h-[100px] w-[100px] object-contain" />
-          <h1 className="text-[28px] font-bold tracking-[-0.02em] text-[#f5f0fa]">3Dсфера</h1>
-        </div>
+<div className="mb-6 flex flex-col items-center">
+  <div className="logo-rotator" aria-label="3Dсфера animated logo">
+    <img src="/assets/logo-treedesfera.png" alt="" className="frame frame-1" />
+    <img src="/assets/living-room.png" alt="" className="frame frame-2" />
+    <img src="/assets/bathroom.png" alt="" className="frame frame-3" />
+    <img src="/assets/bedroom.png" alt="" className="frame frame-4" />
+    <img src="/assets/kitchen.png" alt="" className="frame frame-5" />
+    <img src="/assets/hallway.png" alt="" className="frame frame-6" />
+  </div>
+
+  <img
+    src="/111.png"
+    alt="3Dсфера текст"
+    className="relative mb-4 z-10 object-contain"
+  />
+</div>
 
         <div className="space-y-4">
           <input
@@ -87,7 +98,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full h-[56px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
+            className="w-full h-[36px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
             onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
 
@@ -97,7 +108,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Пароль"
-              className="w-full h-[56px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
+              className="w-full h-[36px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
             <button
@@ -115,7 +126,7 @@ export default function LoginPage() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full h-[56px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
+            className="w-full h-[36px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-[#0a070d] border-t-transparent rounded-full animate-spin" />
@@ -124,7 +135,7 @@ export default function LoginPage() {
             )}
           </button>
         </div>
-      </motion.div>
+      </div>
 
     </div>
   );

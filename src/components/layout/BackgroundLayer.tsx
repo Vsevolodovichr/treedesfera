@@ -10,6 +10,6 @@ export const BackgroundLayer = () => (
   after:bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),transparent_30%)]"
       style={{ backgroundImage: `url(${bgImage})` }}
     />
-    <div className="absolute inset-0 bg-black/40" />
+    <div className="absolute inset-0 bg-black/45" />
   </div>
 );
