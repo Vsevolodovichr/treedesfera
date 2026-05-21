@@ -14,6 +14,7 @@ declare const self: ServiceWorkerGlobalScope & typeof globalThis & {
 
 interface QueuedCapture {
   id: string;
+  photoId?: string;
   propertyId: string;
   roomId: string;
   photoType: string;
@@ -168,6 +169,7 @@ async function flushQueuedCaptures() {
     const formData = new FormData();
     formData.set('file', new File([capture.blob], capture.fileName, { type: capture.blob.type || 'image/jpeg' }));
     formData.set('room_id', capture.roomId);
+    if (capture.photoId) formData.set('photo_id', capture.photoId);
     formData.set('photo_type', capture.photoType);
     if (capture.qualityScore !== undefined) formData.set('quality_score', String(capture.qualityScore));
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { Upload, Camera, Layers, RotateCcw, Check, X, GripVertical, Eraser } from 'lucide-react';
 import { useStore, roomTypeLabels } from '../store';
-import { uploadFloorPlan } from '../lib/api';
+import { uploadFloorPlan, upsertTour } from '../lib/api';
 import { BottomActionBar } from '../components/layout/BottomActionBar';
 
 interface PlacedHotspot {
@@ -101,6 +101,7 @@ export default function PlanSetupPage() {
     if (planImage) {
       setIsSaving(true);
       let imageUrl = planImage;
+      const nextHotspots = hotspots.map((h) => ({ id: h.id, roomId: h.roomId, x: h.x, y: h.y, label: h.label }));
       if (planFile && property?.id) {
         try {
           const uploaded = await uploadFloorPlan(property.id, planFile);
@@ -111,9 +112,18 @@ export default function PlanSetupPage() {
           return;
         }
       }
+      if (property?.id) {
+        try {
+          await upsertTour(property.id, { hotspots: nextHotspots });
+        } catch {
+          setUploadError('Не вдалося зберегти план');
+          setIsSaving(false);
+          return;
+        }
+      }
       setFloorPlan({
         imageUrl,
-        hotspots: hotspots.map((h) => ({ id: h.id, roomId: h.roomId, x: h.x, y: h.y, label: h.label })),
+        hotspots: nextHotspots,
       });
     }
     setIsSaving(false);

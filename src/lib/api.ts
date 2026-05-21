@@ -161,6 +161,15 @@ export function getPublicTour(slug: string) {
   return apiFetch<VirtualTour>(`/api/public/tours/${encodeURIComponent(slug)}`, {}, false);
 }
 
+export async function signFileUrls(keys: string[]) {
+  if (keys.length === 0) return {};
+  const response = await apiFetch<{ urls?: Record<string, string> }>('/api/files/sign', {
+    method: 'POST',
+    body: JSON.stringify({ keys }),
+  });
+  return response.urls || {};
+}
+
 export function postPublicTourView(slug: string, payload: { room_id?: string; time_on_room_ms?: number }) {
   return apiFetch<void>(
     `/api/public/tours/${encodeURIComponent(slug)}/view`,

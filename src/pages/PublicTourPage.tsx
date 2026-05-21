@@ -3,13 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, X, Phone, Mail, ChevronRight, Home, Ruler, BedDouble } from 'lucide-react';
-import { postPublicTourView } from '../lib/api';
+import { getPublicTour, postPublicTourView } from '../lib/api';
 import { hasOrientationPermission, requestOrientationPermission } from '../lib/depth/orientation';
 import type { VirtualTour } from '../types/api';
 import PanoramaViewer from '../components/PanoramaViewer';
 
 const DepthViewer = lazy(() => import('../components/DepthViewer'));
-const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const DEPTH_ENABLED = import.meta.env.VITE_DEPTH_ENABLED !== 'false';
 const PANO_ENABLED = import.meta.env.VITE_PANO_ENABLED === 'true';
 
@@ -168,12 +167,6 @@ function normalizePublicTour(tour: VirtualTour): PublicTourData {
   };
 }
 
-async function fetchPublicTour(slug: string): Promise<VirtualTour> {
-  const response = await fetch(`${API_BASE_URL}/api/public/tours/${encodeURIComponent(slug)}`);
-  if (!response.ok) throw new Error('tour_unavailable');
-  return response.json() as Promise<VirtualTour>;
-}
-
 function shouldRequestOrientationPermission() {
   if (typeof navigator === 'undefined') return false;
   return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -193,7 +186,7 @@ export default function PublicTourPage() {
 
   const tourQuery = useQuery({
     queryKey: ['public-tour', tourSlug],
-    queryFn: () => fetchPublicTour(tourSlug),
+    queryFn: () => getPublicTour(tourSlug),
     enabled: !!tourSlug,
     retry: false,
     select: normalizePublicTour,

@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, Search, Clock, ChevronRight, Download, Share, Camera, Check, ShieldAlert } from 'lucide-react';
-import { useStore } from '../store';
-import { getDraftTours, getProperty, toCaptureProperty } from '../lib/api';
+import { useStore, type FloorPlan, type Photo, type Room, type RoomType } from '../store';
+import { getDraftTours, getProperty, signFileUrls, toCaptureProperty } from '../lib/api';
 import type { VirtualTour } from '../types/api';
 
 type BeforeInstallPromptEvent = Event & {
@@ -46,9 +46,139 @@ const cards = [
   },
 ];
 
+const supportedRoomTypes: RoomType[] = ['kitchen', 'living', 'bedroom', 'bathroom', 'hallway', 'room', 'balcony', 'wardrobe', 'storage', 'office', 'garden', 'garage', 'terrace', 'basement', 'other'];
+
+function asRecord(value: unknown) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function stringValue(record: Record<string, unknown>, keys: string[], fallback = '') {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.trim()) return value;
+  }
+  return fallback;
+}
+
+function numberValue(record: Record<string, unknown>, keys: string[], fallback = 0) {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  }
+  return fallback;
+}
+
+function isStorageKey(value: string) {
+  return !/^https?:\/\//.test(value) && !value.startsWith('/') && !value.startsWith('blob:') && !value.startsWith('data:');
+}
+
+function addStorageKey(keys: Set<string>, value: unknown) {
+  if (typeof value === 'string' && value && isStorageKey(value)) keys.add(value);
+}
+
+function resolveAsset(record: Record<string, unknown>, keys: string[], signedUrls: Record<string, string>) {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value !== 'string' || !value) continue;
+    if (signedUrls[value]) return signedUrls[value];
+    if (!isStorageKey(value)) return value;
+  }
+  return '';
+}
+
+function collectDraftFileKeys(draft: VirtualTour) {
+  const keys = new Set<string>();
+  addStorageKey(keys, draft.floor_plan_key);
+  addStorageKey(keys, draft.floor_plan_url);
+  draft.rooms.forEach((room) => {
+    const roomRecord = asRecord(room);
+    addStorageKey(keys, roomRecord.panoramaKey);
+    addStorageKey(keys, roomRecord.panoramaUrl);
+    addStorageKey(keys, roomRecord.panorama_url);
+    room.photos?.forEach((photo) => {
+      const photoRecord = asRecord(photo);
+      addStorageKey(keys, photoRecord.key);
+      addStorageKey(keys, photoRecord.url);
+      addStorageKey(keys, photoRecord.thumbnail);
+      addStorageKey(keys, photoRecord.depthKey);
+      addStorageKey(keys, photoRecord.depthUrl);
+    });
+  });
+  return Array.from(keys);
+}
+
+function normalizeDraftFloorPlan(draft: VirtualTour, signedUrls: Record<string, string>): FloorPlan | null {
+  const tourRecord = asRecord(draft);
+  const imageUrl = resolveAsset(tourRecord, ['floor_plan_url', 'floorPlanUrl', 'floor_plan', 'floorPlan', 'floor_plan_key'], signedUrls);
+  if (!imageUrl) return null;
+  return {
+    imageUrl,
+    hotspots: draft.hotspots.map((hotspot, index) => {
+      const record = asRecord(hotspot);
+      return {
+        id: stringValue(record, ['id'], `hs_${index + 1}`),
+        roomId: stringValue(record, ['roomId', 'room_id']),
+        x: numberValue(record, ['x']),
+        y: numberValue(record, ['y']),
+        label: stringValue(record, ['label', 'name'], 'Кімната'),
+      };
+    }).filter((hotspot) => hotspot.roomId),
+  };
+}
+
+function normalizeDraftRooms(draft: VirtualTour, signedUrls: Record<string, string>): Room[] {
+  return draft.rooms.map((room, index) => {
+    const roomRecord = asRecord(room);
+    const id = stringValue(roomRecord, ['id', 'room_id'], `room_${index + 1}`);
+    const roomType = stringValue(roomRecord, ['type']);
+    const photos = Array.isArray(room.photos) ? room.photos.map((photo, photoIndex): Photo | null => {
+      const photoRecord = asRecord(photo);
+      const url = resolveAsset(photoRecord, ['url', 'public_url', 'image_url', 'photo_url', 'key'], signedUrls);
+      if (!url) return null;
+      const rawStatus = stringValue(photoRecord, ['status']);
+      const status = rawStatus === 'warning' || rawStatus === 'rejected' ? rawStatus : 'accepted';
+      const depthUrl = resolveAsset(photoRecord, ['depthUrl', 'depth_url', 'depthKey'], signedUrls);
+      return {
+        id: stringValue(photoRecord, ['id', 'photo_id'], `${id}_${photoIndex + 1}`),
+        url,
+        thumbnail: resolveAsset(photoRecord, ['thumbnail', 'thumb', 'url', 'key'], signedUrls) || url,
+        type: stringValue(photoRecord, ['type', 'photo_type'], 'photo'),
+        qualityScore: numberValue(photoRecord, ['qualityScore', 'quality_score']),
+        status,
+        issues: Array.isArray(photoRecord.issues) ? photoRecord.issues.filter((issue): issue is string => typeof issue === 'string') : [],
+        depthUrl: depthUrl || undefined,
+        depthStatus: depthUrl ? 'ready' : 'none',
+      };
+    }).filter((photo): photo is Photo => Boolean(photo)) : [];
+    const panoramaUrl = resolveAsset(roomRecord, ['panoramaUrl', 'panorama_url', 'panorama', 'panoramaKey'], signedUrls);
+    return {
+      id,
+      name: stringValue(roomRecord, ['name', 'label'], `Кімната ${index + 1}`),
+      type: supportedRoomTypes.includes(roomType as RoomType) ? roomType as RoomType : 'room',
+      order: index,
+      active: true,
+      status: photos.length > 0 || panoramaUrl ? 'completed' : 'pending',
+      photos,
+      qualityScore: photos.length > 0 ? Math.round(photos.reduce((sum, photo) => sum + photo.qualityScore, 0) / photos.length) : 0,
+      panorama: panoramaUrl ? {
+        id: `pano_${id}`,
+        roomId: id,
+        captureMethod: 'manual',
+        frameUrls: [],
+        equirectangularUrl: panoramaUrl,
+        status: 'ready',
+        hfov: numberValue(roomRecord, ['hfov'], 360),
+        yawOffset: numberValue(roomRecord, ['yawOffset', 'yaw_offset']),
+        createdAt: Date.now(),
+      } : undefined,
+    };
+  });
+}
+
 export default function StartPage() {
   const navigate = useNavigate();
-  const { user, setProperty, setTourSlug } = useStore();
+  const { user, setProperty, setFloorPlan, setRooms, setCurrentRoomIndex, setTourSlug } = useStore();
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showDrafts, setShowDrafts] = useState(false);
   const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
@@ -107,7 +237,16 @@ export default function StartPage() {
     setTourSlug(draft.slug);
     try {
       const property = await getProperty(draft.property_id);
+      let signedUrls: Record<string, string> = {};
+      try {
+        signedUrls = await signFileUrls(collectDraftFileKeys(draft));
+      } catch {
+        signedUrls = {};
+      }
       setProperty(toCaptureProperty(property, user?.name || 'Агент'));
+      setFloorPlan(normalizeDraftFloorPlan(draft, signedUrls));
+      if (draft.rooms.length > 0) setRooms(normalizeDraftRooms(draft, signedUrls));
+      setCurrentRoomIndex(0);
       navigate('/plan');
     } catch {
       navigate('/property/select');

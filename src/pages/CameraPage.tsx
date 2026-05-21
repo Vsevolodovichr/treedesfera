@@ -293,6 +293,7 @@ export default function CameraPage() {
         for (const photo of capturedPhotos) {
           const blob = await dataUrlToBlob(photo.dataUrl);
           await queueCapture({
+            photoId: photo.id,
             propertyId: property.id,
             roomId: currentRoom.id,
             photoType: photo.type,

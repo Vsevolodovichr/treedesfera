@@ -12,6 +12,7 @@ const captureStore = createStore(CAPTURE_DB_NAME, CAPTURE_STORE_NAME);
 
 export interface QueuedCapture {
   id: string;
+  photoId?: string;
   propertyId: string;
   roomId: string;
   photoType: string;
@@ -23,6 +24,7 @@ export interface QueuedCapture {
 }
 
 export interface QueueCaptureInput {
+  photoId: string;
   propertyId: string;
   roomId: string;
   photoType: string;
@@ -66,6 +68,7 @@ export async function queueCapture(input: QueueCaptureInput) {
   const id = `capture_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   const queued: QueuedCapture = {
     id,
+    photoId: input.photoId,
     propertyId: input.propertyId,
     roomId: input.roomId,
     photoType: input.photoType,
@@ -103,6 +106,7 @@ export async function flushQueuedCaptures() {
       const file = new File([capture.blob], capture.fileName, { type: capture.blob.type || 'image/jpeg' });
       await uploadTourPhoto(capture.propertyId, file, {
         room_id: capture.roomId,
+        photo_id: capture.photoId,
         photo_type: capture.photoType,
         quality_score: capture.qualityScore,
       });
