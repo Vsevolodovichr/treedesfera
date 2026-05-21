@@ -29,7 +29,7 @@ type SyncEventWithTag = ExtendableEvent & {
   tag: string;
 };
 
-const API_URL = (import.meta.env.VITE_API_URL || 'https://api.xatosfera.pp.ua').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL || 'https://api.hatosfera-crm.pp.ua').replace(/\/$/, '');
 const API_HOST = new URL(API_URL).hostname;
 const CAPTURE_SYNC_TAG = 'xatosfera-capture-upload-sync';
 const CAPTURE_DB_NAME = 'xatosfera-capture';

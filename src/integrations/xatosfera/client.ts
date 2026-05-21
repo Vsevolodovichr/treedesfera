@@ -5,7 +5,7 @@ const REFRESH_TOKEN_KEY = 'xatosfera_refresh_token';
 const USER_KEY = 'xatosfera_user';
 const REFRESH_SKEW_MS = 60_000;
 
-const API_URL = (import.meta.env.VITE_API_URL || 'https://api.xatosfera.pp.ua').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL || 'https://api.hatosfera-crm.pp.ua').replace(/\/$/, '');
 
 export class ApiError extends Error {
   status: number;
