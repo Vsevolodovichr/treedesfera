@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useStore } from '../store';
 import { login, refreshSession, toStoreUser } from '../lib/api';
 import { probeDepthSupport } from '../lib/depth/capabilities';
+import { requestPwaUpdatePromptAfterLogin } from '../pwa';
 import './Loginpage.css';
 
 export default function LoginPage() {
@@ -25,6 +26,7 @@ export default function LoginPage() {
         setAuthenticated(true);
         void probeDepthSupport().then(setDeviceCaps);
         setUser(toStoreUser(user));
+        requestPwaUpdatePromptAfterLogin();
         navigate('/start', { replace: true });
       })
       .catch(() => {
@@ -52,6 +54,7 @@ export default function LoginPage() {
       setAuthenticated(true);
       void probeDepthSupport().then(setDeviceCaps);
       setUser(toStoreUser(session.user));
+      requestPwaUpdatePromptAfterLogin();
       navigate('/start');
     } catch {
       setError('Невірний email або пароль');

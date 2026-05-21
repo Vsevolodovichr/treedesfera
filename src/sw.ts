@@ -36,7 +36,6 @@ const CAPTURE_DB_NAME = 'xatosfera-capture';
 const CAPTURE_STORE_NAME = 'captures';
 const CAPTURE_QUEUE_KEY = 'pending-captures';
 
-self.skipWaiting();
 clientsClaim();
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
@@ -197,5 +196,9 @@ self.addEventListener('sync', (event) => {
 });
 
 self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
   if (event.data && event.data.type === 'FLUSH_CAPTURE_QUEUE') event.waitUntil(flushQueuedCaptures());
 });
