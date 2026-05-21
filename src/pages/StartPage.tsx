@@ -16,7 +16,7 @@ type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<PermissionState>;
 };
 
-type PermState = 'idle' | 'pending' | 'granted' | 'denied';
+type PermState = 'idle' | 'pending' | 'granted' | 'denied' | 'unavailable';
 
 const cards = [
   {
@@ -219,19 +219,6 @@ export default function StartPage() {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
-  useEffect(() => {
-    if (typeof navigator === 'undefined') return;
-    const perms = (navigator as Navigator).permissions;
-    if (!perms || typeof perms.query !== 'function') return;
-    perms
-      .query({ name: 'camera' as PermissionName })
-      .then((result) => {
-        if (result.state === 'granted') setPermState('granted');
-        else if (result.state === 'denied') setPermState('denied');
-      })
-      .catch(() => {});
-  }, []);
-
   const handleDraftSelect = async (draft: VirtualTour) => {
     setSelectedDraftId(draft.id);
     setTourSlug(draft.slug);
@@ -279,6 +266,7 @@ export default function StartPage() {
     setPermState('pending');
 
     let cameraOk = false;
+    let cameraErrorName = '';
     try {
       if (navigator.mediaDevices?.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -288,7 +276,8 @@ export default function StartPage() {
         stream.getTracks().forEach((track) => track.stop());
         cameraOk = true;
       }
-    } catch {
+    } catch (error) {
+      cameraErrorName = error instanceof DOMException ? error.name : '';
       cameraOk = false;
     }
 
@@ -301,7 +290,13 @@ export default function StartPage() {
       }
     }
 
-    setPermState(cameraOk ? 'granted' : 'denied');
+    setPermState(
+      cameraOk
+        ? 'granted'
+        : cameraErrorName === 'NotAllowedError' || cameraErrorName === 'PermissionDeniedError'
+        ? 'denied'
+        : 'unavailable',
+    );
   };
 
   return (
@@ -398,17 +393,17 @@ export default function StartPage() {
             onClick={() => void handleRequestPermissions()}
             disabled={permState === 'pending'}
             className={`w-full rounded-[16px] p-4 flex items-center gap-3 transition-all disabled:opacity-60 ${
-              permState === 'denied'
+              permState === 'denied' || permState === 'unavailable'
                 ? 'border border-[rgba(248,113,113,0.25)] bg-[rgba(248,113,113,0.06)]'
                 : 'border border-[rgba(209,0,217,0.2)] bg-[rgba(209,0,217,0.08)] active:scale-[0.98]'
             }`}
           >
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                permState === 'denied' ? 'bg-[rgba(248,113,113,0.15)]' : 'bg-[rgba(209,0,217,0.18)]'
+                permState === 'denied' || permState === 'unavailable' ? 'bg-[rgba(248,113,113,0.15)]' : 'bg-[rgba(209,0,217,0.18)]'
               }`}
             >
-              {permState === 'denied' ? (
+              {permState === 'denied' || permState === 'unavailable' ? (
                 <ShieldAlert className="w-4 h-4 text-[#f87171]" />
               ) : (
                 <Camera className="w-4 h-4 text-[#d100d9]" />
@@ -416,13 +411,15 @@ export default function StartPage() {
             </div>
             <div className="flex-1 text-left min-w-0">
               <h3 className="text-[14px] font-semibold text-[#f5f0fa]">
-                {permState === 'denied' ? 'Дозволи заблоковано' : 'Надати дозволи'}
+                {permState === 'denied' ? 'Дозволи заблоковано' : permState === 'unavailable' ? 'Камера недоступна' : 'Надати дозволи'}
               </h3>
               <p className="text-[12px] text-[#a08fb0] mt-0.5">
                 {permState === 'pending'
                   ? 'Запит у системі...'
                   : permState === 'denied'
                   ? 'Увімкніть камеру в налаштуваннях браузера'
+                  : permState === 'unavailable'
+                  ? 'Відкрийте PWA через HTTPS або спробуйте Safari'
                   : 'Камера та орієнтація для зйомки'}
               </p>
             </div>
