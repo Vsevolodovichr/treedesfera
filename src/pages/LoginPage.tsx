@@ -91,14 +91,19 @@ export default function LoginPage() {
   />
 </div>
 
-        <div className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleLogin();
+          }}
+        >
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             className="w-full h-[36px] px-4 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
-            onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           />
 
           <div className="relative">
@@ -108,9 +113,9 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Пароль"
               className="w-full h-[36px] px-4 pr-12 bg-[#14101a] border border-[rgba(232,78,250,0.10)] rounded-[12px] text-[#f5f0fa] placeholder-[#5a4d68] text-[16px] focus:border-[#d100d9] focus:shadow-[0_0_0_3px_rgba(209,0,217,0.15)] transition-all outline-none"
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
             <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[#a08fb0]"
             >
@@ -123,7 +128,7 @@ export default function LoginPage() {
           )}
 
           <button
-            onClick={handleLogin}
+            type="submit"
             disabled={loading}
             className="w-full h-[36px] bg-[#d100d9] hover:bg-[#e84efa] active:bg-[#9d00a8] text-[#0a070d] font-semibold text-[15px] rounded-[12px] transition-all flex items-center justify-center disabled:opacity-60 mt-2"
           >
@@ -133,7 +138,7 @@ export default function LoginPage() {
               'Увійти'
             )}
           </button>
-        </div>
+        </form>
       </div>
 
     </div>
