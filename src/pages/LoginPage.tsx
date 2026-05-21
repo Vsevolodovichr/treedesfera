@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useStore } from '../store';
 import { login, refreshSession, toStoreUser } from '../lib/api';
 import { probeDepthSupport } from '../lib/depth/capabilities';
-import './LoginPage.css';
+import './Loginpage.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
